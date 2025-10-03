@@ -2,8 +2,9 @@ from datetime import datetime
 
 class Account: 
 
-    def __init__(self, account_number: str, balance: float = 0, max_balance: float = 20000): 
+    def __init__(self, account_number: str, account_name: str, balance: float = 0, max_balance: float = 10000): 
         self.account_number: str = account_number
+        self.account_name: str = account_name
         self.balance: float = balance
         self.max_balance: float = max_balance
         self.history: list[str] = [] 
@@ -17,7 +18,7 @@ class Account:
         new_balance = amount + self.balance
         if (new_balance < self.max_balance):
             self.balance = new_balance
-            self.history.append(f"Dépôt le {self.date_now()}: +{amount} €. Nouveau solde: {self.balance} €")
+            self.history.append(f"Dépôt le {self.date_now()} sur {self.account_name}: +{amount} €. Nouveau solde: {self.balance} €")
         else:
             print("Dépôt refusé : plafond dépassé.")
 
@@ -30,7 +31,7 @@ class Account:
             print("Retrait refusé : fonds insuffisants.")
         else: 
             self.balance = new_balance
-            self.history.append(f"Retrait le {self.date_now()}: -{amount} €. Nouveau solde: {self.balance} €")
+            self.history.append(f"Retrait le {self.date_now()} sur {self.account_name}: -{amount} €. Nouveau solde: {self.balance} €")
 
         return self.balance
     
@@ -41,3 +42,11 @@ class Account:
         else: 
             for operation in self.history:
                 print(operation) 
+
+    
+    def __str__(self) -> str: 
+        return f"N°: {self.account_number}, Nom: {self.account_name}, Montant: {self.balance}, Montant maximum: {self.max_balance}"
+    
+
+    def __repr__(self) -> str:
+        return self.__str__()

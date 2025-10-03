@@ -16,3 +16,7 @@ class Client:
         else: 
             accounts_str = "Aucun compte."
         return f"ID: {self.id}, Prénom: {self.firstname}, Nom: {self.name}, Comptes: {accounts_str}"
+
+
+    def __repr__(self) -> str:
+        return self.__str__()
