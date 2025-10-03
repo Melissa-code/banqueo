@@ -10,8 +10,9 @@ def main():
 
     bank.add_client(client)
     bank.add_client(client2)
-    bank.open_account(client, account.account_name, account.account_number, 1200.50, 22950)
+    bank.open_account(client, "Livret A", "12345", 1200.50, 22950)
 
+    client.get_account(account.account_number)
     bank.delete_account_by_id(account.account_number)
     bank.delete_client_by_id(client.id)
 

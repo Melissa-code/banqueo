@@ -9,6 +9,15 @@ class Client:
         self.accounts: list[Account] = [] #objects list
 
 
+    def get_account(self, account_number: str) -> Account | None:
+        for account in self.accounts:
+            if account.account_number == account_number:
+                print("compte trouvé: ", account)
+                return account
+        print('aucun compte trouvé.')
+        return None
+    
+
     def __str__(self) -> str: 
         if self.accounts: 
             accounts_numbers = [account.account_number for account in self.accounts]

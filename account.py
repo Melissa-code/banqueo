@@ -45,7 +45,7 @@ class Account:
 
     
     def __str__(self) -> str: 
-        return f"N°: {self.account_number}, Nom: {self.account_name}, Montant: {self.balance}, Montant maximum: {self.max_balance}"
+        return f"Nom: {self.account_name}, N°: {self.account_number}, Montant: {self.balance}, Montant maximum: {self.max_balance}"
     
 
     def __repr__(self) -> str:

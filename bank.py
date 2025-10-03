@@ -15,12 +15,12 @@ class Bank:
         print("Clients: ", self.clients)
 
     
-    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: float = 0, max_balance: float = 10000) -> Account:
+    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: float = 0, max_balance: float = 20000) -> Account:
         account = Account(account_name, account_number, initial_balance, max_balance)
         client.accounts.append(account)
         self.accounts.append(account)
-        print("Compte nouvellement ouvert: ", account)
-
+        
+        print(f"Compte nouvellement ouvert: {account}")
         return account
 
 
