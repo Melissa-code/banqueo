@@ -1,0 +1,18 @@
+from account import Account 
+
+class Client: 
+
+    def __init__(self, id: int, firstname: str, name: str): 
+        self.id: int = id
+        self.firstname: str = firstname
+        self.name: str = name
+        self.accounts: list[Account] = [] #objects list
+
+
+    def __str__(self) -> str: 
+        if self.accounts: 
+            accounts_numbers = [account.account_number for account in self.accounts]
+            accounts_str = ", ".join(accounts_numbers)
+        else: 
+            accounts_str = "Aucun compte."
+        return f"ID: {self.id}, Prénom: {self.firstname}, Nom: {self.name}, Comptes: {accounts_str}"
