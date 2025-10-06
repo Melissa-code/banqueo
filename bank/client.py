@@ -1,4 +1,7 @@
-from account import Account 
+from bank.account import Account 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Client: 
 
@@ -12,9 +15,10 @@ class Client:
     def get_account(self, account_number: str) -> Account | None:
         for account in self.accounts:
             if account.account_number == account_number:
-                print("compte trouvé: ", account)
+
                 return account
-        print('aucun compte trouvé.')
+       
+        logger.warning(f"Aucun compte trouvé pour le numéro : {account_number}")
         return None
     
 

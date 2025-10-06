@@ -1,6 +1,6 @@
 import unittest
-from client import Client
-from account import Account 
+from bank.client import Client
+from bank.account import Account 
 
 class TestClient(unittest.TestCase): 
 
@@ -19,7 +19,7 @@ class TestClient(unittest.TestCase):
         self.assertEqual(result.max_balance, 22950)
 
 
-    def test_get_aacount_not_found(self):
+    def test_get_account_not_found(self):
         result = self.client.get_account("444444")
         self.assertIsNone(result)
     

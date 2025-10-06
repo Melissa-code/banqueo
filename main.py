@@ -1,8 +1,13 @@
-from account import Account 
-from client import Client
-from bank import Bank
+from config.dictConfig import logger
+from bank.account import Account
+from bank.client import Client
+from bank.bank import Bank
 
-def main(): 
+def main():
+    logger.debug("Message DEBUG dans le fichier")
+    logger.info("Message INFO dans le fichier")
+    logger.info("=== Démarrage du programme ===")
+
     account = Account("Livret A", "12345", balance=1000, max_balance=20000)
     client = Client("1", "Melissa", "Gilbert")
     client2 = Client("2", "Ben", "Laforge")
@@ -15,6 +20,8 @@ def main():
     client.get_account(account.account_number)
     bank.delete_account_by_id(account.account_number)
     bank.delete_client_by_id(client.id)
+
+    logger.info("=== Fin du programme ===")
 
 
 if __name__ == "__main__":

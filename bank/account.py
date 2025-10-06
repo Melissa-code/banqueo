@@ -2,9 +2,9 @@ from datetime import datetime
 
 class Account: 
 
-    def __init__(self, account_number: str, account_name: str, balance: float = 0, max_balance: float = 10000): 
-        self.account_number: str = account_number
+    def __init__(self, account_name: str, account_number: str, balance: float = 0, max_balance: float = 10000): 
         self.account_name: str = account_name
+        self.account_number: str = account_number
         self.balance: float = balance
         self.max_balance: float = max_balance
         self.history: list[str] = [] 
