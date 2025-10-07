@@ -17,7 +17,7 @@ LOGGING_CONFIG = {
             "class": "logging.FileHandler",
             "formatter": "default",
             "level": "DEBUG",
-            "filename": LOG_FILE,  # chemin complet ici
+            "filename": LOG_FILE,  # chemin complet
             "mode": "a",           # ajouter au fichier existant
         },
     },

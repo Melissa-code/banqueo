@@ -28,6 +28,7 @@ class Client:
             accounts_str = ", ".join(accounts_numbers)
         else: 
             accounts_str = "Aucun compte."
+            
         return f"ID: {self.id}, Prénom: {self.firstname}, Nom: {self.name}, Comptes: {accounts_str}"
 
 
