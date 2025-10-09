@@ -63,3 +63,18 @@ git config user.name -> git config user.name "user_name"
 # email 
 git config user.email -> git config user.email "email"
 ```
+
+## tests 
+
+- Utilisation de unittest, run `python -m unittest tests.test_client`
+
+## Logs 
+
+- Hiérarchie des niveaux standards du module logging :
+```
+DEBUG	     logger.debug()	      
+INFO	     logger.info()	      
+WARNING	     logger.warning()	  
+ERROR	     logger.error()	      
+CRITICAL	 logger.critical()	 
+```
