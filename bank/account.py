@@ -14,7 +14,7 @@ class Account:
     
 
     def date_now(self) -> str:
-        """Retourne la date du jour heure et minute du mouvement pour précision"""
+        """Retourne la date du jour heure et minute de l'opération pour précision"""
         return datetime.now().strftime("%d-%m-%Y (%H:%M)")
 
 
