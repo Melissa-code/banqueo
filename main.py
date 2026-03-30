@@ -113,7 +113,7 @@ class BanqueoApp:
             account_name = input("Nom du compte (ex: Compte Courant, Livret A) : ").strip()
             account_number = input("Numéro de compte : ").strip()
             initial_balance = float(input("Solde initial (défaut 0) : ") or 0)
-            max_balance = float(input("Plafond (défaut 20000) : ") or 20000)
+            max_balance = float(input("Plafond (défaut 20 000 €) : ") or 20000)
             
             if not account_name or not account_number:
                 print("✗ Erreur : Le nom et le numéro de compte ne peuvent pas être vides")
@@ -132,6 +132,48 @@ class BanqueoApp:
         except ValueError:
             print("\n✗ Erreur : Valeurs numériques invalides")
 
+    
+    def diplay_accounts(self):
+        """Affiche tous les comptes de la banque (interface "Administrateur")"""
+        accounts = self.bank.get_all_accounts()
+        print("\n--- LISTE DES COMPTES ---") 
+
+        if not accounts:
+            print("Aucun compte enregistré.")
+            return
+        
+        for account in accounts:
+            print(f"  • {account}")
+        print(f"\nTotal : {len(accounts)} compte(s)")
+
+    def make_deposit(self):
+        """Effectue un dépôt sur un compte"""
+        print("\n--- DÉPÔT ---")
+
+        try:
+            account_number = input("Numéro de compte : ").strip()
+            amount = float(input("Montant à déposer : "))
+            
+            if amount <= 0:
+                print("✗ Erreur : Le montant doit être positif")
+                return
+            
+            # recherche le compte
+            result_search = self.bank.get_account_by_number(account_number)
+
+            if result_search['success']:
+                account_obj = result_search['account']
+
+                result_deposit = account_obj.deposit(amount)   
+            
+            if result_deposit['success']:
+                print(f"\n✓ {result_deposit['message']}")
+            else:
+                print(f"\n✗ {result_deposit['message']}")
+        
+        except ValueError:
+            print("\n✗ Erreur : Montant invalide")
+
 
     def run(self): 
         """Lance l'application"""
@@ -147,6 +189,11 @@ class BanqueoApp:
                 self.search_client()
             elif choice == "4":
                 self.open_account()
+            elif choice == "5":
+                self.diplay_accounts()
+            elif choice == "6":
+                self.make_deposit()
+            
          
             # Pause pour que l'utilisateur puisse lire le résultat
             input("\nAppuyez sur Entrée pour continuer...")
