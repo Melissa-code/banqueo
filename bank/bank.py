@@ -196,7 +196,7 @@ class Bank:
         for client in self.clients:
             if account in client.accounts:
                 client.accounts.remove(account)
-                logger.info(f"Compte {account_number} supprimé du client {client.firstname} {client.lastname}")
+                logger.info(f"Compte { account.account_name } {account.account_number} supprimé du client {client.firstname} {client.lastname}")
                 break
         
         return {

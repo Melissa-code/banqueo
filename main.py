@@ -264,6 +264,35 @@ class BanqueoApp:
         except ValueError:
             print("\n✗ Erreur : L'ID doit être un nombre entier")      
             
+    
+    def delete_account(self):
+        """ Supprime un compte"""
+        print("\n--- SUPPRESSION DE COMPTE ---")
+
+        account_number = input("Numéro de compte à supprimer : ").strip()
+        result_delete = self.bank.delete_account_by_number(account_number)
+
+        if result_delete['success']:
+            print(f"\n✓ {result_delete['message']}")
+        else:
+            print(f"\n✗ {result_delete['message']}")
+
+    def delete_client(self):
+        """Supprime un client et tous ses comptes"""
+        print("\n--- SUPPRESSION DE CLIENT ---")
+
+        try:
+            client_id = int(input("ID du client à supprimer : "))
+            result_delete = self.bank.delete_client_by_id(client_id)
+
+            if result_delete['success']:
+                print(f"\n✓ {result_delete['message']}")
+            else:
+                print(f"\n✗ {result_delete['message']}")
+        
+        except ValueError:
+            print("\n✗ Erreur : L'ID doit être un nombre entier")
+
 
     def run(self): 
         """Lance l'application"""
@@ -291,6 +320,10 @@ class BanqueoApp:
                 self.display_account_history()
             elif choice == "10":
                 self.display_client_dashboard()
+            elif choice == "11":
+                self.delete_account()
+            elif choice == "12":
+                self.delete_client()
             
          
             # Pause pour que l'utilisateur puisse lire le résultat
