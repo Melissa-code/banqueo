@@ -237,6 +237,32 @@ class BanqueoApp:
                 print(f"  • [{operation['date']}] {operation['type'].capitalize()} de {operation['amount']:.2f} € (solde après opération: {operation['balance']:.2f} €)")
         else:
             print(f"\n✗ {result_search['message']}")   
+
+    def display_client_dashboard(self):
+        """Affiche tous les comptes et le solde total d'un client"""
+        print("\n--- TABLEAU DE BORD CLIENT ---")
+
+        try:
+            client_id = int(input("ID du client : "))
+            result_client = self.bank.get_client_by_id(client_id)
+            
+            if not result_client['success']:
+                print(f"\n✗ {result_client['message']}")
+                return
+            
+            client = result_client['client']
+            accounts = client.get_all_accounts()
+            total_balance = client.get_total_balance()
+
+            print(f"\n✓ Tableau de bord pour {client.firstname} {client.lastname} (ID: {client.id})")
+            print(f"  Nombre de comptes : {len(accounts)}")
+            print(f"  Solde total : {total_balance:.2f} €")
+            print("  Comptes :")
+            for account in accounts:
+                print(f"    - {account.account_name} N° {account.account_number} (solde: {account.balance:.2f} €)")
+        
+        except ValueError:
+            print("\n✗ Erreur : L'ID doit être un nombre entier")      
             
 
     def run(self): 
@@ -263,6 +289,8 @@ class BanqueoApp:
                 self.check_balance()
             elif choice == "9":
                 self.display_account_history()
+            elif choice == "10":
+                self.display_client_dashboard()
             
          
             # Pause pour que l'utilisateur puisse lire le résultat
