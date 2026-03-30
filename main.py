@@ -217,6 +217,27 @@ class BanqueoApp:
         else:
             print(f"\n✗ {result_search['message']}")
 
+    def display_account_history(self):
+        """Affiche l'historique des opérations d'un compte"""
+        print("\n--- HISTORIQUE DE COMPTE ---")
+
+        account_number = input("Numéro de compte : ").strip()
+        result_search = self.bank.get_account_by_number(account_number)
+
+        if result_search['success']:
+            account_obj = result_search['account']
+            history = account_obj.get_history()
+
+            if not history:
+                print(f"Aucune opération enregistrée pour le compte {account_obj.account_name} N° {account_obj.account_number}.")
+                return
+            
+            print(f"\n✓ Historique du compte {account_obj.account_name} N° {account_obj.account_number} :")
+            for operation in history:
+                print(f"  • [{operation['date']}] {operation['type'].capitalize()} de {operation['amount']:.2f} € (solde après opération: {operation['balance']:.2f} €)")
+        else:
+            print(f"\n✗ {result_search['message']}")   
+            
 
     def run(self): 
         """Lance l'application"""
@@ -240,6 +261,8 @@ class BanqueoApp:
                 self.make_withdrawal()
             elif choice == "8":
                 self.check_balance()
+            elif choice == "9":
+                self.display_account_history()
             
          
             # Pause pour que l'utilisateur puisse lire le résultat
