@@ -13,7 +13,7 @@ class BanqueoApp:
         print("\n" + "="*50)
         print(f"   🏦 Bienvenue chez {self.bank.name} 🏦")
         print("="*50)
-
+        self.is_running = True
 
     def display_menu(self): 
         """Affiche le menu principal"""
@@ -293,10 +293,18 @@ class BanqueoApp:
         except ValueError:
             print("\n✗ Erreur : L'ID doit être un nombre entier")
 
+    def exit_app(self):
+        """Quitte l'application"""  
+
+        print("\nSauvegarde des données en cours...")
+        print("\nMerci d'avoir utilisé Banqueo. À bientôt ! 👋")
+        self.is_running = False
+
 
     def run(self): 
         """Lance l'application"""
-        while True:
+
+        while self.is_running:
             self.display_menu()
             choice = input("\nVotre choix: ").strip()
 
@@ -324,10 +332,14 @@ class BanqueoApp:
                 self.delete_account()
             elif choice == "12":
                 self.delete_client()
+            elif choice == "0":
+                self.exit_app()
+            else:
+                print("✗ Choix invalide. Veuillez choisir entre 0 et 12.")
             
-         
-            # Pause pour que l'utilisateur puisse lire le résultat
-            input("\nAppuyez sur Entrée pour continuer...")
+            if self.is_running: 
+                # Pause pour que l'utilisateur puisse lire le résultat
+                input("\nAppuyez sur Entrée pour continuer...")
 
 
 
