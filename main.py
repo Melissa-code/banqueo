@@ -174,6 +174,49 @@ class BanqueoApp:
         except ValueError:
             print("\n✗ Erreur : Montant invalide")
 
+    
+    def make_withdrawal(self):
+        """Effectue un retrait sur un compte"""
+        print("\n--- RETRAIT ---")
+
+        try:
+            account_number = input("Numéro de compte : ").strip()
+            amount = float(input("Montant à retirer : "))
+            
+            if amount <= 0:
+                print("✗ Erreur : Le montant doit être positif")
+                return
+            
+            # recherche le compte
+            result_search = self.bank.get_account_by_number(account_number)
+
+            if result_search['success']:
+                account_obj = result_search['account']
+
+                result_withdrawal = account_obj.withdraw(amount)   
+            
+            if result_withdrawal['success']:
+                print(f"\n✓ {result_withdrawal['message']}")
+            else:
+                print(f"\n✗ {result_withdrawal['message']}")
+        
+        except ValueError:
+            print("\n✗ Erreur : Montant invalide") 
+
+    def check_balance(self):
+        """Consulte le solde d'un compte spécifique"""
+        print("\n--- CONSULTATION DE SOLDE ---")
+
+        account_number = input("Numéro de compte : ").strip()
+        
+        result_search = self.bank.get_account_by_number(account_number)
+
+        if result_search['success']:
+            account_obj = result_search['account']
+            print(f"\n✓ Solde du compte {account_obj.account_name} N° {account_obj.account_number} : {account_obj.balance:.2f} €")
+        else:
+            print(f"\n✗ {result_search['message']}")
+
 
     def run(self): 
         """Lance l'application"""
@@ -193,6 +236,10 @@ class BanqueoApp:
                 self.diplay_accounts()
             elif choice == "6":
                 self.make_deposit()
+            elif choice == "7":
+                self.make_withdrawal()
+            elif choice == "8":
+                self.check_balance()
             
          
             # Pause pour que l'utilisateur puisse lire le résultat
