@@ -1,15 +1,16 @@
 from datetime import datetime
+from decimal import Decimal
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class Account: 
-    def __init__(self, account_name: str, account_number: str, balance: float = 0, max_balance: float = 10000): 
+    def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000): 
         self.account_name: str = account_name
         self.account_number: str = account_number
-        self.balance: float = balance
-        self.max_balance: float = max_balance
+        self.balance: Decimal = balance
+        self.max_balance: Decimal = max_balance
         self.history: list[dict] = [] 
     
 
@@ -18,7 +19,7 @@ class Account:
         return datetime.now().strftime("%d-%m-%Y (%H:%M)")
 
 
-    def deposit(self, amount: float) -> dict:
+    def deposit(self, amount: Decimal) -> dict:
         """
         Effectue un dépôt sur le compte.
         
@@ -53,7 +54,7 @@ class Account:
         }
 
 
-    def withdraw(self, amount: float) -> dict:
+    def withdraw(self, amount: Decimal) -> dict:
         """
         Effectue un retrait sur le compte.
         

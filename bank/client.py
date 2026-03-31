@@ -1,57 +1,35 @@
 from bank.account import Account 
+from decimal import Decimal
 import logging
 
 logger = logging.getLogger(__name__)
 
 class Client: 
     def __init__(self, id: int, firstname: str, lastname: str): 
-        self.id: int = id
-        self.firstname: str = firstname
-        self.lastname: str = lastname
+        self.id = id
+        self.firstname = firstname
+        self.lastname = lastname
         self.accounts: list[Account] = [] #objects list
 
 
-    def get_account(self, account_number: str) -> Account | None:
-        """
-        Récupère un compte par son numéro
-        
-        Returns:
-            dict avec 'success', 'account', 'message'
-        """
+    def get_account(self, account_number: str) -> Account:
+        """Récupère un compte par son numéro ou lève une erreur si le compte n'existe pas"""
         for account in self.accounts:
             if account.account_number == account_number:
-                return {
-                'success': True,
-                'account': account,
-                'message': f"Compte trouvé: {account.account_name} N° {account.account_number} (solde {account.balance} €)" 
-                }
+                return account
     
-        logger.warning(f"Aucun compte trouvé pour le numéro : {account_number}")
-        return {
-                'success': False,
-                'account': None,
-                'message': f"Aucun compte trouvé pour le numéro : {account_number}."
-            }
+        logger.warning(f"[Client ID:{self.id}] get_account(): compte {account_number} introuvable.")
+        raise ValueError(f"Le compte n°{account_number} n'existe pas.")
 
 
     def get_all_accounts(self) -> list[Account]:
-        """
-        Retourne tous les comptes du client
-        
-        Returns:
-            Liste des comptes
-        """
+        """Retourne tous les comptes du client ou liste vide[] (copy pour éviter modification externe: encapsulation des données)"""
         return self.accounts.copy()
     
 
-    def get_total_balance(self) -> float: 
-        """
-        Calcule le solde total de tous les comptes du client.
-        
-        Returns:
-            Solde total
-        """
-        return sum(account.balance for account in self.accounts)
+    def get_total_balance(self) -> Decimal:
+        """Calcule le solde total de tous les comptes du client - Decimal('0.00') point de départ"""
+        return sum(account.balance for account in self.accounts), Decimal('0.00')
         
     
     def __str__(self) -> str: 
@@ -65,4 +43,4 @@ class Client:
     
 
     def __repr__(self) -> str:
-        return f"Client({self.id}, {self.firstname}, {self.lastname}, {self.accounts})"
+        return f"Client({self.id}, {self.firstname}, {self.lastname})"
