@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class Bank: 
+
     def __init__(self, id: int, name: str):
         self.id = id
         self.name = name
@@ -50,6 +51,7 @@ class Bank:
         
         logger.warning(f"[Bank ID:{self.id}] get_account_by_number(): compte {account_number} introuvable")
         raise ValueError(f"Compte avec le numéro {account_number} n'existe pas dans la banque {self.name}")
+
 
     def get_all_accounts(self) -> list[Account]:
         """Retourne tous les comptes de la banque"""

@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Account: 
+    
     def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000): 
         self.account_name = account_name
         self.account_number = account_number
