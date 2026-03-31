@@ -84,7 +84,7 @@ class Account:
         return {
             'success': True,
             'balance': self.balance,
-            'message': f"Dépôt de {amount} € effectué avec succès"
+            'message': f"Retrait de {amount} € effectué avec succès"
         }
     
 
