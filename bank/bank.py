@@ -1,5 +1,6 @@
 from bank.client import Client
 from bank.account import Account
+from decimal import Decimal
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,181 +14,83 @@ class Bank:
         self.accounts: list[Account] = []  
 
 
-    def get_client_by_id(self, client_id: int) -> dict:
-        """
-        Récupère un client par son ID.
-        
-        Returns:
-            dict avec 'success', 'client', 'message'
-        """
+    def get_client_by_id(self, client_id: int) -> Client:
+        """Récupère un client par son ID ou lève une erreur si le client n'existe pas"""
         for client in self.clients:
             if client.id == client_id:
-                return {
-                    'success': True,
-                    'client': client,
-                    'message': f"Client {client.firstname} {client.lastname} trouvé"
-                }
+                return client
         
-        logger.warning(f"Client ID {client_id} introuvable dans {self.name}")
-        return {
-            'success': False,
-            'client': None,
-            'message': f"Client avec l'ID {client_id} introuvable"
-        }
+        logger.warning(f"[Bank ID:{self.id}] get_client_by_id(): client ID {client_id} introuvable dans {self.name}")
+        raise ValueError(f"Client avec l'ID {client_id} n'existe pas dans la banque {self.name}")
     
     
-    def add_client(self, client:Client) -> dict:
-        """Ajoute un client à la banque 
+    def add_client(self, client:Client) -> Client:
+        """Ajoute un client à la banque"""
+        try: 
+            existing_client = self.get_client_by_id(client.id)
+            logger.warning(f"[Bank ID:{self.id}] add_client(): client ID {existing_client.id} existe déjà dans {self.name}")
+            raise ValueError(f"Client avec l'ID {existing_client.id} existe déjà dans la banque {self.name}")
         
-        Returns: 
-            dict avec 'success', 'client', 'message' 
-        """
-        # Vérifier si le client existe déjà
-        if self.get_client_by_id(client.id)['success']:
-            logger.warning(f"Client ID {client.id} existe déjà chez {self.name}")
-            return {
-                'success': False,
-                'client': None,
-                'message': f"Client avec l'ID {client.id} existe déjà"
-            }
-        self.clients.append(client)
+        except ValueError:
+            self.clients.append(client)
+            logger.info(f"[Bank ID:{self.id}] add_client(): client {client.firstname} {client.lastname} (ID {client.id}) ajouté à la banque {self.name}")
+            return client
         
-        return {
-            'success': True,
-            'client': client,
-            'message': f"Client {client.firstname} {client.lastname} ajouté avec succès"
-        }
-    
-
+        
     def get_all_clients(self) -> list[Client]:
-        """
-        Retourne tous les clients de la banque.
-        
-        Returns:
-            Liste des clients
-        """
+        """Retourne tous les clients de la banque"""
         return self.clients.copy()
     
     
-    def get_account_by_number(self, account_number: str) -> dict:
-        """
-        Récupère un compte par son numéro.
-        
-        Returns:
-            dict avec 'success', 'account', 'message'
-        """
+    def get_account_by_number(self, account_number: str) -> Account:
+        """Récupère un compte par son numéro ou lève une erreur si le compte n'existe pas"""
         for account in self.accounts:
             if account.account_number == account_number:
-                return {
-                    'success': True,
-                    'account': account,
-                    'message': f"Compte {account.account_name} trouvé"
-                }
+                return account
         
-        logger.warning(f"Compte {account_number} introuvable")
-        return {
-            'success': False,
-            'account': None,
-            'message': f"Compte {account_number} introuvable"
-        }
-    
+        logger.warning(f"[Bank ID:{self.id}] get_account_by_number(): compte {account_number} introuvable")
+        raise ValueError(f"Compte avec le numéro {account_number} n'existe pas dans la banque {self.name}")
 
     def get_all_accounts(self) -> list[Account]:
-        """
-        Retourne tous les comptes de la banque.
-        
-        Returns:
-            Liste des comptes
-        """
+        """Retourne tous les comptes de la banque"""
         return self.accounts.copy()
     
     
-    def open_account(self, client: Client, account_name: str, account_number: str, 
-                     initial_balance: float = 0, max_balance: float = 20000) -> Account:
-        """
-        Ouvre un nouveau compte pour un client.
+    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: Decimal = 0, max_balance: Decimal = 20000) -> Account:
+        """Ouvre un nouveau compte pour un client donné et vérifie que client existe dans la banque"""
+        try: 
+            if client not in self.clients:
+                logger.warning(f"[Bank ID:{self.id}] open_account(): client {client.firstname} {client.lastname} (ID {client.id}) n'appartient pas à la banque {self.name}")
+                raise ValueError(f"Le client {client.firstname} n'appartient pas à la banque {self.name}")
         
-        Returns:
-            dict avec 'success', 'account', 'message'
-        """
-        # Vérifier que le client existe dans la banque
-        if client not in self.clients:
-            logger.warning(f"Tentative d'ouverture de compte pour un client non enregistré")
-            return {
-                'success': False,
-                'account': None,
-                'message': "Le client n'est pas enregistré dans cette banque"
-            }
-    
-        # Vérifier que le numéro de compte n'existe pas déjà
-        if self.get_account_by_number(account_number)['success']:
-            logger.warning(f"Compte {account_number} existe déjà")
-            return {
-                'success': False,
-                'account': None,
-                'message': f"Le numéro de compte {account_number} existe déjà"
-            }
+            existing_account = self.get_account_by_number(account_number)
+            logger.warning(f"[Bank ID:{self.id}] open_account(): compte {existing_account.account_number} existe déjà")
+            raise ValueError(f"Le numéro de compte {existing_account.account_number} existe déjà dans la banque {self.name}")
         
-        # Créer le compte
-        account = Account(account_name, account_number, initial_balance, max_balance)
-        client.accounts.append(account)
-        self.accounts.append(account)
-        
-        return {
-            'success': True,
-            'account': account,
-            'message': f"Compte {account_name} ouvert avec succès"
-        }
+        except ValueError:
+            account = Account(account_name, account_number, initial_balance, max_balance)
+            client.accounts.append(account)
+            self.accounts.append(account)
+            return account
 
 
-    def delete_client_by_id(self, client_id: int) -> dict:
-        """
-        Supprime un client et tous ses comptes.
+    def delete_client_by_id(self, client_id: int) -> None:
+        """Supprime un client et tous ses comptes"""
+        client = self.get_client_by_id(client_id)
         
-        Returns:
-            dict avec 'success', 'message'
-        """
-        result = self.get_client_by_id(client_id)
-        
-        if not result['success']:
-            return {
-                'success': False,
-                'message': f"Impossible de supprimer : client {client_id} introuvable"
-            }
-        
-        client = result['client']
-        
-        # Supprimer tous les comptes du client
+        # Supprime tous les comptes du client
         accounts_to_remove = client.accounts.copy()
         for account in accounts_to_remove:
             self.delete_account_by_number(account.account_number)
         
         # Supprimer le client
         self.clients.remove(client)
-        logger.info(f"Client {client.firstname} {client.lastname} (ID {client_id}) supprimé")
+        logger.info(f"[Bank ID:{self.id}] delete_client_by_id(): client {client.firstname} {client.lastname} (ID {client_id}) supprimé")
         
-        return {
-            'success': True,
-            'message': f"Client {client.firstname} {client.lastname} supprimé avec succès"
-        }
-    
 
-    def delete_account_by_number(self, account_number: str) -> dict:
-        """
-        Supprime un compte.
-        
-        Returns:
-            dict avec 'success', 'message'
-        """
-        result = self.get_account_by_number(account_number)
-        
-        if not result['success']:
-            return {
-                'success': False,
-                'message': f"Impossible de supprimer : compte {account_number} introuvable"
-            }
-        
-        account = result['account']
+    def delete_account_by_number(self, account_number: str) -> None:
+        """Supprime un compte"""
+        account = self.get_account_by_number(account_number)
         
         # Supprimer le compte de la liste globale de la banque
         self.accounts.remove(account)
@@ -196,13 +99,8 @@ class Bank:
         for client in self.clients:
             if account in client.accounts:
                 client.accounts.remove(account)
-                logger.info(f"Compte { account.account_name } {account.account_number} supprimé du client {client.firstname} {client.lastname}")
+                logger.info(f"[Bank ID:{self.id}] delete_account_by_number(): compte { account.account_name } {account.account_number} supprimé du client {client.firstname} {client.lastname}")
                 break
-        
-        return {
-            'success': True,
-            'message': f"Compte {account_number} supprimé avec succès"
-        }
     
 
     def __str__(self) -> str:
