@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 
 class Account: 
     
-    def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000): 
+    def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000, history: list = None) -> None: 
         self.account_name = account_name
         self.account_number = account_number
         self.balance = balance
         self.max_balance = max_balance
-        self.history: list[dict] = [] 
+        self.history: list[dict] = history if history is not None else [] 
     
 
     def date_now(self) -> str:
