@@ -74,7 +74,7 @@ git config user.email -> git config user.email "email"
 ```
 DEBUG	     logger.debug()	      
 INFO	     logger.info()	      
-WARNING	     logger.warning()	  
+WARNING	   logger.warning()	  
 ERROR	     logger.error()	      
 CRITICAL	 logger.critical()	 
 ```
