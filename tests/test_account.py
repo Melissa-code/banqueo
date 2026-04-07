@@ -1,9 +1,8 @@
 from decimal import Decimal
 import unittest
-from unittest import result
 from unittest.mock import patch
-from bank.account import Account
 from tests.factories.account_factory import AccountFactory 
+
 
 class TestAccount(unittest.TestCase): 
 
