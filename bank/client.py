@@ -36,10 +36,7 @@ class Client:
     
 
     def get_total_balance(self) -> Decimal:
-        """
-        Calcule le solde total de tous les comptes du client
-        Decimal('0.00') point de départ
-        """
+        """Calcule le solde total de tous les comptes du client - Decimal('0.00') point de départ"""
         return sum(
             (account.balance for account in self.accounts), 
             Decimal('0.00')

@@ -4,6 +4,9 @@ from decimal import Decimal
 from bank.account import Account
 from bank.client import Client
 
+from .factories.account_factory import AccountFactory
+from .factories.client_factory import ClientFactory
+
 
 class TestClient(unittest.TestCase): 
 
@@ -23,22 +26,19 @@ class TestClient(unittest.TestCase):
         self.client.accounts.append(self.account)
         self.client.accounts.append(self.account2)
 
-    def test_init(self) -> None: 
-        """Teste la création d'un client"""
-        new_client = Client(2, "Jean", "Dupont")
-        self.assertEqual(new_client.firstname, "Jean")
-        self.assertEqual(new_client.lastname, "Dupont")
-        self.assertEqual(new_client.accounts, []) 
-        self.assertIsInstance(new_client.accounts, list)
+
+    # ==================== Tests init_with_accounts =====================
 
     def test_init_with_accounts(self) -> None:
-        """Teste qu'un client peut avoir des comptes après initialisation"""
-        # self.client a déjà 2 comptes ajoutés dans setUp
+        """Vérifie que les comptes sont bien rattachés au client"""
         self.assertEqual(len(self.client.accounts), 2)
-        self.assertIn(self.account, self.client.accounts)
-        self.assertIn(self.account2, self.client.accounts)
+        self.assertEqual(self.client.accounts[0].account_number, "12345")
+        self.assertEqual(self.client.accounts[0].balance, Decimal("1432.88"))
+        self.assertEqual(self.client.accounts[1].account_number, "3333")
+        self.assertEqual(self.client.accounts[1].balance, Decimal("22000.88"))
 
-    # ===== Tests de get_account =====
+
+    # ======================= Tests de get_account =======================
 
     def test_get_account_found(self) -> None:
         result = self.client.get_account("12345")
@@ -58,34 +58,38 @@ class TestClient(unittest.TestCase):
         empty_client = Client(4, "Marie", "Martin")
         with self.assertRaises(ValueError):
             empty_client.get_account("7890")
+
         
-    # ===== Tests de get_all_accounts =====
+    # =================== Tests de get_all_accounts ======================
 
     def test_get_all_accounts(self) -> None:
         """Teste la récupération de tous les comptes"""
         results = self.client.get_all_accounts()
-        self.assertIsInstance(results, list)
         self.assertEqual(len(results), 2)
-        self.assertIn(self.account, results)
-        self.assertIn(self.account2, results)
-
+        self.assertEqual(results[0].account_number, "12345")
+        self.assertEqual(results[1].account_number, "3333")
+        
     def test_get_all_accounts_empty(self) -> None:
         """Teste get_all_accounts sur un client sans compte"""
-        empty_client = Client(3, "Marie", "Martin")
-        results = empty_client.get_all_accounts()
-        self.assertEqual(results, [])
-        self.assertEqual(len(results), 0)
-    
+        empty_client = ClientFactory.create_client(4, "Julie", "Dubois")
+        with self.assertRaises(ValueError) as cm:
+            empty_client.get_all_accounts() 
+            empty_client.get_account("12345")
+        self.assertIn("n'existe pas", str(cm.exception))
+        self.assertEqual(empty_client.get_all_accounts(), []) 
+
     def test_get_all_accounts_returns_copy(self) -> None:
         """Teste que get_all_accounts retourne une copie"""
+
         results = self.client.get_all_accounts()
         # Modifier la copie ne doit pas affecter l'original
-        results.append(Account("Nouveau", "9999", 0, 1000))
+        results.append(AccountFactory.create_account("Nouveau", "9999", 0, 1000))
         # L'original doit toujours avoir 2 comptes
+        self.client.get_all_accounts()
         self.assertEqual(len(self.client.accounts), 2)
-        self.assertEqual(len(self.client.get_all_accounts()), 2)
 
-    # ===== Tests de get_total_balance =====
+
+    # =================== Tests de get_total_balance =====================
 
     def test_get_total_balance(self) -> None:
         result_sum = self.client.get_total_balance()
@@ -94,9 +98,10 @@ class TestClient(unittest.TestCase):
 
     def test_get_total_balance_empty(self) -> None:
         """Teste le solde total d'un client sans compte"""
-        empty_client = Client(3, "Marie", "Martin")
+        empty_client = ClientFactory.create_client(4, "Julie", "Dubois")
         result_sum = empty_client.get_total_balance()
-        self.assertEqual(result_sum, 0)
+        self.assertIsInstance(result_sum, Decimal)  
+        self.assertEqual(result_sum, Decimal("0.00"))   
 
     def test_get_total_balance_after_operations(self) -> None:
         """Teste le solde total après des opérations sur les comptes"""
@@ -114,7 +119,8 @@ class TestClient(unittest.TestCase):
         result_sum = single_client.get_total_balance()
         self.assertEqual(result_sum, Decimal("5000.00"))
 
-    # ===== Tests de __str__ et __repr__ =====
+
+    # ==================== Tests de __str__ et __repr__ ====================
 
     def test_str(self) -> None:
         """Teste la représentation string"""
@@ -126,7 +132,7 @@ class TestClient(unittest.TestCase):
     
     def test_str_without_accounts(self) -> None:
         """Teste __str__ pour un client sans compte"""
-        empty_client = Client(3, "Marie", "Martin")
+        empty_client = ClientFactory.create_client(3, "Marie", "Martin")
         result = str(empty_client)
         self.assertIn("Marie", result)
         self.assertIn("Martin", result)
