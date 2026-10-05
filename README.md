@@ -75,11 +75,28 @@ CRITICAL	 logger.critical()
 
 ## API 
 
+### Installation de FastAPI
+
 - Dans `venv` activé, installer Python FastAPI :
 `pip install fastapi "uvicorn[standard]"`
 
 - Lancer le serveur sur port 8001: `uvicorn api:app --reload --port 8001`
+- Mettre à jour les dépendances : `requirements.txt` : `pip freeze > requirements.txt`
 
-- Check les tests: `python -m unittest discover`
-- Mets à jour `requirements.txt` : `pip freeze > requirements.txt`
+- Swagger UI (tests des endpoints) : http://127.0.0.1:8001/docs
+- ReDoc (lecture seule) : http://127.0.0.1:8001/redoc
 
+
+### Structure de l'API
+
+- `api.py` : interface web, à côté de `main.py` : interface console
+- Les deux utilisent la logique métier du dossier `bank/`
+- Modèles Pydantic `ClientIn`, `AccountIn` : ils décrivent le JSON accepté
+  par l'API et le valident (erreur 422 si le format est incorrect)
+- Les `ValueError` levées par `bank/` sont converties en codes HTTP (404, 409)
+
+Les données sont en mémoire : elles sont perdues au redémarrage du serveur.
+
+### Tests
+
+Lancer les tests : `python -m unittest discover`
