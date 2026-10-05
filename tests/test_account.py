@@ -1,15 +1,21 @@
-from decimal import Decimal
 import unittest
-from unittest import result
-from unittest.mock import patch
+from decimal import Decimal
+
+from factories.account_factory import AccountFactory
+
 from bank.account import Account
-from tests.factories.account_factory import AccountFactory 
+
 
 class TestAccount(unittest.TestCase): 
 
     def setUp(self): 
         """Initialise un compte avant chaque test"""
-        self.account = AccountFactory.create_account(account_name="Livret A", account_number="444", balance='1500.50', max_balance='22950.00')
+        self.account = AccountFactory.create_account(
+            account_name="Livret A", 
+            account_number="444", 
+            balance='1500.50', 
+            max_balance='22950.00'
+        )
 
     # ================== Tests de deposit =================
 
@@ -46,8 +52,8 @@ class TestAccount(unittest.TestCase):
 
     def test_deposit_zero(self) -> None: 
         """Teste un dépôt de 0€"""
-        result = self.account.deposit(0)
-        self.assertEqual(result, 1500.50)
+        result = self.account.deposit(Decimal("0.00"))
+        self.assertEqual(result, Decimal("1500.50"))
 
     def test_deposit_history_structure(self) -> None:
         """Teste la structure de l'historique pour un dépôt"""

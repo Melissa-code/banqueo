@@ -1,8 +1,9 @@
-from decimal import Decimal
-from config.dictConfig import logger
-from bank.client import Client
-from bank.bank import Bank
 import logging
+from decimal import Decimal
+
+from bank.bank import Bank
+from bank.client import Client
+from config.dictConfig import logger
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class BanqueoApp:
         try:
             client_id = int(input("ID du client à rechercher : "))
             client = self.bank.get_client_by_id(client_id)
-            print(f"\n✓ Client trouvé :")
+            print("\n✓ Client trouvé :")
             print(f"  {client}")
             print(f"  Nombre de comptes : {len(client.accounts)}")
             print(f"  Solde total : {client.get_total_balance()} €")

@@ -1,5 +1,7 @@
+from factories.client_factory import ClientFactory
+
 from bank.bank import Bank
-from tests.factories.client_factory import ClientFactory
+
 
 class BankFactory:
 

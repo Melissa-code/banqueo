@@ -1,14 +1,25 @@
 import unittest
+from decimal import Decimal
+
+from bank.account import Account
 from bank.client import Client
-from bank.account import Account 
+
 
 class TestClient(unittest.TestCase): 
 
     def setUp(self) -> None:
         """Initialise avant chaque test"""
         self.client = Client(1, "Magali", "Framont")
-        self.account = Account("Livret B", "12345", 1432.88, 22950)
-        self.account2 = Account("Compte courant", "3333", 22000.88, 22950)
+        self.account = Account(
+            "Livret B", "12345", 
+            Decimal("1432.88"), 
+            Decimal("22950.00")
+        )
+        self.account2 = Account(
+            "Compte courant", 
+            "3333", Decimal("22000.88"), 
+            Decimal("22950.00")
+        )
         self.client.accounts.append(self.account)
         self.client.accounts.append(self.account2)
 
@@ -29,35 +40,25 @@ class TestClient(unittest.TestCase):
 
     # ===== Tests de get_account =====
 
-    def test_get_account_found(self) -> None: 
-        """Teste la récupération d'un compte existant"""
+    def test_get_account_found(self) -> None:
         result = self.client.get_account("12345")
-        self.assertTrue(result['success'])
-        self.assertEqual(result['account'], self.account)  
-        self.assertIsNotNone(result['account'])
-        self.assertIn("Compte trouvé", result['message'])
+        self.assertEqual(result, self.account)
 
     def test_get_account_found_second(self) -> None:
-        """Teste la récupération du deuxième compte"""
         result = self.client.get_account("3333")
-        self.assertTrue(result['success'])
-        self.assertEqual(result['account'], self.account2)
-        self.assertEqual(result['account'].account_name, "Compte courant")
+        self.assertEqual(result, self.account2)
+        self.assertEqual(result.account_name, "Compte courant")
 
     def test_get_account_not_found(self) -> None:
-        """Teste la récupération d'un compte inexistant"""
-        result = self.client.get_account("444444")
-        self.assertFalse(result['success'])
-        self.assertIsNone(result['account'])
-        self.assertIn(f"Aucun compte trouvé pour le numéro : 444444", result['message'])
+        with self.assertRaises(ValueError) as ctx:
+            self.client.get_account("444444")
+        self.assertIn("444444", str(ctx.exception))
 
     def test_get_account_empty_client(self) -> None:
-        """Teste get_account sur un client sans compte"""
         empty_client = Client(4, "Marie", "Martin")
-        result = empty_client.get_account("7890")
-        self.assertFalse(result['success'])
-        self.assertIsNone(result['account'])
-    
+        with self.assertRaises(ValueError):
+            empty_client.get_account("7890")
+        
     # ===== Tests de get_all_accounts =====
 
     def test_get_all_accounts(self) -> None:
@@ -87,13 +88,9 @@ class TestClient(unittest.TestCase):
     # ===== Tests de get_total_balance =====
 
     def test_get_total_balance(self) -> None:
-        """Teste le calcul du solde total (2 chiffres ap virgule: 23433.760000000002. Pas exactement 23433.76 avec float)"""
         result_sum = self.client.get_total_balance()
-        # 1432.88 + 22000.88 = 23433.76
-        expected = self.account.balance + self.account2.balance
-        self.assertAlmostEqual(result_sum, expected, places=2)
-        self.assertAlmostEqual(result_sum, 23433.76, places=2)
-        self.assertIsInstance(result_sum, float)
+        self.assertEqual(result_sum, Decimal("23433.76"))
+        self.assertIsInstance(result_sum, Decimal)
 
     def test_get_total_balance_empty(self) -> None:
         """Teste le solde total d'un client sans compte"""
@@ -103,19 +100,19 @@ class TestClient(unittest.TestCase):
 
     def test_get_total_balance_after_operations(self) -> None:
         """Teste le solde total après des opérations sur les comptes"""
-        self.account.deposit(100)      # 1432.88 + 100 = 1532.88
-        self.account2.withdraw(1000)   # 22000.88 - 1000 = 21000.88
+        self.account.deposit(Decimal("100.00"))      # 1432.88 + 100 = 1532.88
+        self.account2.withdraw(Decimal("1000.00"))   # 22000.88 - 1000 = 21000.88
         result_sum = self.client.get_total_balance()
         # 1532.88 + 21000.88 = 22533.76
-        self.assertAlmostEqual(result_sum, 22533.76, places=2) #AssertionError: 22533.760000000002 != 22533.76
+        self.assertAlmostEqual(result_sum, Decimal("22533.76"), places=2) #AssertionError: 22533.760000000002 != 22533.76
 
     def test_get_total_balance_single_account(self) -> None:
         """Teste le solde total avec un seul compte"""
         single_client = Client(4, "Paul", "Durand")
-        single_account = Account("Livret A", "5555", 5000.0, 22950)
+        single_account = Account("Livret A", "5555", Decimal("5000.00"), Decimal("22950.00"))
         single_client.accounts.append(single_account)
         result_sum = single_client.get_total_balance()
-        self.assertEqual(result_sum, 5000.0)
+        self.assertEqual(result_sum, Decimal("5000.00"))
 
     # ===== Tests de __str__ et __repr__ =====
 

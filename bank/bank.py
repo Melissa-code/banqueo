@@ -1,7 +1,8 @@
-from bank.client import Client
-from bank.account import Account
-from decimal import Decimal
 import logging
+from decimal import Decimal
+
+from bank.account import Account
+from bank.client import Client
 
 logger = logging.getLogger(__name__)
 

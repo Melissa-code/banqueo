@@ -1,5 +1,5 @@
-import os
 import logging.config
+import os
 
 # Crée le dossier logs/ si nécessaire
 os.makedirs("logs", exist_ok=True)

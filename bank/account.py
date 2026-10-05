@@ -1,29 +1,29 @@
+import logging
 from datetime import datetime
 from decimal import Decimal
-import logging
 
 logger = logging.getLogger(__name__)
 
 
 class Account: 
     
-    def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000, history: list = None) -> None: 
+    def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000, history: list[dict] | None = None) -> None: 
         self.account_name = account_name
         self.account_number = account_number
         self.balance = balance
         self.max_balance = max_balance
-        self.history: list[dict] = history if history is not None else [] 
+        self.history = history if history is not None else [] 
     
 
     def date_now(self) -> str:
         """Retourne la date du jour heure et minute de l'opération pour précision"""
-        return datetime.now().strftime("%d-%m-%Y (%H:%M)")
+        return datetime.now().strftime("%d-%m-%Y (%H:%M)")  # noqa: DTZ005
 
 
     def deposit(self, amount: Decimal) -> Decimal:
         # sourcery skip: class-extract-method
         """Effectue un dépôt sur le compte oulève une exception si le dépôt dépasse le plafond"""
-        new_balance = amount + self.balance
+        new_balance: Decimal = amount + self.balance
 
         if (new_balance >= self.max_balance): 
             logger.warning(f"[Account {self.account_number} deposit()]: Dépôt de {amount} € refusé: plafond dépassé")
@@ -34,10 +34,9 @@ class Account:
         logger.info(f"[Account {self.account_number} deposit()]: dépôt de {amount} € effectué. Nouveau solde: {self.balance}")
         return self.balance
 
-
     def withdraw(self, amount: Decimal) -> Decimal:
         """Effectue un retrait sur le compte"""
-        new_balance = self.balance - amount
+        new_balance: Decimal = self.balance - amount
     
         if (new_balance < 0): 
             logger.warning(f"[Account {self.account_number} withdraw()]: retrait refusé sur {self.account_name}: fonds insuffisants")
@@ -62,7 +61,7 @@ class Account:
         return f"Account('{self.account_name}', '{self.account_number}', {self.balance}, {self.max_balance})"
     
 
-    #----------------------------- Méthodes privées --------------------------------#
+    #------------------------- Méthodes privées --------------------------#
 
     def _add_to_history(self, operation_type: str, amount: Decimal) -> None:
         """Ajoute une opération à l'historique du compte"""

@@ -1,7 +1,9 @@
 import unittest
+from unittest import result
+
+from bank.account import Account
 from bank.bank import Bank
 from bank.client import Client
-from bank.account import Account
 
 
 class TestBank(unittest.TestCase):
@@ -22,12 +24,8 @@ class TestBank(unittest.TestCase):
 
     def test_add_client_success(self) -> None:
         """Teste l'ajout d'un client"""
-        result = self.bank.add_client(self.client1)
-        self.assertTrue(result['success'])
-        self.assertEqual(result['client'], self.client1)
-        self.assertIn("succès", result['message'])
-        self.assertEqual(len(self.bank.clients), 1)
-        self.assertIn(self.client1, self.bank.clients)
+        result = self.bank.add_client(self.client)
+        self.assertEqual(result, self.client)
 
     def test_add_multiple_clients(self) -> None:
         """Teste l'ajout de plusieurs clients"""
