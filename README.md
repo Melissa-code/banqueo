@@ -57,19 +57,6 @@ pip install -r requirements.txt
 ```
 
 
-## Vérifier l'utilisateur Git actuel (global et local)
-
-- Pour le configurer uniquement sur le projet, ne pas mettre `--global`:
-
-```
-# identifiant/username
-git config user.name -> git config user.name "user_name"
-
-# email 
-git config user.email -> git config user.email "email"
-```
-
-
 ## tests 
 
 - Utilisation de unittest, run `python -m unittest tests.test_client`
