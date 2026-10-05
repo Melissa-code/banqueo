@@ -26,17 +26,15 @@ class Bank:
         raise ValueError(f"Client avec l'ID {client_id} n'existe pas dans la banque {self.name}")
     
     
-    def add_client(self, client:Client) -> Client:
-        """Ajoute un client à la banque"""
-        try: 
-            existing_client = self.get_client_by_id(client.id)
-            logger.warning(f"[Bank ID:{self.id}] add_client(): client ID {existing_client.id} existe déjà dans {self.name}")
-            raise ValueError(f"Client avec l'ID {existing_client.id} existe déjà dans la banque {self.name}")
-        
-        except ValueError:
-            self.clients.append(client)
-            logger.info(f"[Bank ID:{self.id}] add_client(): client {client.firstname} {client.lastname} (ID {client.id}) ajouté à la banque {self.name}")
-            return client
+    def add_client(self, client: Client) -> Client:
+        """Ajoute un client à la banque (refuse les ID en double)"""
+        if any(c.id == client.id for c in self.clients):
+            logger.warning(f"[Bank ID:{self.id}] add_client(): client ID {client.id} existe déjà dans {self.name}")
+            raise ValueError(f"Client avec l'ID {client.id} existe déjà dans la banque {self.name}")
+
+        self.clients.append(client)
+        logger.info(f"[Bank ID:{self.id}] add_client(): client {client.firstname} {client.lastname} (ID {client.id}) ajouté à la banque {self.name}")
+        return client
         
         
     def get_all_clients(self) -> list[Client]:
@@ -59,22 +57,20 @@ class Bank:
         return self.accounts.copy()
     
     
-    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: Decimal = 0, max_balance: Decimal = 20000) -> Account:
-        """Ouvre un nouveau compte pour un client donné et vérifie que client existe dans la banque"""
-        try: 
-            if client not in self.clients:
-                logger.warning(f"[Bank ID:{self.id}] open_account(): client {client.firstname} {client.lastname} (ID {client.id}) n'appartient pas à la banque {self.name}")
-                raise ValueError(f"Le client {client.firstname} n'appartient pas à la banque {self.name}")
-        
-            existing_account = self.get_account_by_number(account_number)
-            logger.warning(f"[Bank ID:{self.id}] open_account(): compte {existing_account.account_number} existe déjà")
-            raise ValueError(f"Le numéro de compte {existing_account.account_number} existe déjà dans la banque {self.name}")
-        
-        except ValueError:
-            account = Account(account_name, account_number, initial_balance, max_balance)
-            client.accounts.append(account)
-            self.accounts.append(account)
-            return account
+    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: Decimal = Decimal("0.00"), max_balance: Decimal = Decimal("20000.00")) -> Account:
+        """Ouvre un compte pour un client de la banque"""
+        if client not in self.clients:
+            logger.warning(f"[Bank ID:{self.id}] open_account(): client {client.firstname} {client.lastname} (ID {client.id}) n'appartient pas à la banque {self.name}")
+            raise ValueError(f"Le client {client.firstname} n'appartient pas à la banque {self.name}")
+
+        if any(a.account_number == account_number for a in self.accounts):
+            logger.warning(f"[Bank ID:{self.id}] open_account(): compte {account_number} existe déjà")
+            raise ValueError(f"Le numéro de compte {account_number} existe déjà dans la banque {self.name}")
+
+        account = Account(account_name, account_number, initial_balance, max_balance)
+        client.accounts.append(account)
+        self.accounts.append(account)
+        return account
 
 
     def delete_client_by_id(self, client_id: int) -> None:
