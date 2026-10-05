@@ -97,6 +97,7 @@ CRITICAL	 logger.critical()
 
 Les données sont en mémoire : elles sont perdues au redémarrage du serveur.
 
+
 ### Tests
 
 Lancer les tests : `python -m unittest discover`

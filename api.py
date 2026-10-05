@@ -15,11 +15,13 @@ class ClientIn(BaseModel):
     firstname: str
     lastname: str
 
-
 class AccountIn(BaseModel):
     account_name: str
     account_number: str
     initial_balance: Decimal = Decimal("0.00")
+
+class AmountIn(BaseModel):
+    amount: Decimal
 
 
 @app.post("/clients", 
@@ -64,3 +66,53 @@ def get_balance(client_id: int):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     return {"client_id": client.id, "total_balance": str(client.get_total_balance())}
+
+
+@app.post("/accounts/{account_number}/deposit",
+    summary="Déposer de l'argent",
+    description="Dépose un montant sur un compte. 404 si le compte n'existe pas."
+)
+def deposit(account_number: str, data: AmountIn):
+    try:
+        account = bank.get_account_by_number(account_number)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    try:
+        new_balance = account.deposit(data.amount)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    return {"account_number": account_number, "balance": str(new_balance)}
+
+
+@app.post("/accounts/{account_number}/withdraw",
+          summary="Retirer de l'argent",
+          description="Retire un montant d'un compte. 404 si le compte n'existe pas, 400 si le retrait est refusé.")
+def withdraw(account_number: str, data: AmountIn):
+    try:
+        account = bank.get_account_by_number(account_number)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    try:
+        new_balance = account.withdraw(data.amount)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    return {"account_number": account_number, "balance": str(new_balance)}
+
+
+@app.get("/accounts/{account_number}/history",
+         summary="Historique d'un compte",
+         description="Liste les opérations du compte. 404 si le compte n'existe pas.")
+def history(account_number: str):
+    try:
+        account = bank.get_account_by_number(account_number)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    return [
+        {
+            "date": str(op["date"]),
+            "type": op["type"],
+            "amount": str(op["amount"]),
+            "balance": str(op["balance"]),
+        }
+        for op in account.get_history()
+    ]

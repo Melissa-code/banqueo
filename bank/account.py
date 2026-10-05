@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Account: 
     
-    def __init__(self, account_name: str, account_number: str, balance: Decimal = 0, max_balance: Decimal = 10000, history: list[dict] | None = None) -> None: 
+    def __init__(self, account_name: str, account_number: str, balance: Decimal = Decimal("0.00"), max_balance: Decimal = Decimal("10000.00"), history: list[dict] | None = None) -> None: 
         self.account_name = account_name
         self.account_number = account_number
         self.balance = balance
@@ -21,11 +21,13 @@ class Account:
 
 
     def deposit(self, amount: Decimal) -> Decimal:
-        # sourcery skip: class-extract-method
-        """Effectue un dépôt sur le compte oulève une exception si le dépôt dépasse le plafond"""
+        """Effectue un dépôt sur le compte"""
+        if amount <= 0:
+            raise ValueError("Le montant du dépôt doit être positif.")
+        
         new_balance: Decimal = amount + self.balance
-
-        if (new_balance >= self.max_balance): 
+      
+        if (new_balance > self.max_balance): 
             logger.warning(f"[Account {self.account_number} deposit()]: Dépôt de {amount} € refusé: plafond dépassé")
             raise ValueError(f"Dépôt refusé : le solde dépasserait le plafond de {self.max_balance} € autorisé.")
 
@@ -33,11 +35,15 @@ class Account:
         self._add_to_history('dépôt', amount)
         logger.info(f"[Account {self.account_number} deposit()]: dépôt de {amount} € effectué. Nouveau solde: {self.balance}")
         return self.balance
+    
 
     def withdraw(self, amount: Decimal) -> Decimal:
         """Effectue un retrait sur le compte"""
+        if amount <= 0:
+            raise ValueError("Le montant du retrait doit être positif.")
+        
         new_balance: Decimal = self.balance - amount
-    
+        
         if (new_balance < 0): 
             logger.warning(f"[Account {self.account_number} withdraw()]: retrait refusé sur {self.account_name}: fonds insuffisants")
             raise ValueError(f"Retrait refusé : fonds insuffisants (solde: {self.balance} €)")

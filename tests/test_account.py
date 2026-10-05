@@ -50,10 +50,10 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(len(self.account.history), 0)
 
     def test_deposit_zero(self) -> None: 
-        """Teste un dépôt de 0€"""
-        result = self.account.deposit(Decimal("0.00"))
-        self.assertEqual(result, Decimal("1500.50"))
-
+        """Un dépôt de 0 € doit être refusé"""
+        with self.assertRaises(ValueError):
+            self.account.deposit(Decimal("0.00"))
+            
     def test_deposit_history_structure(self) -> None:
         """Teste la structure de l'historique pour un dépôt"""
         self.account.deposit(Decimal("100.00"))
