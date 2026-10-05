@@ -72,3 +72,14 @@ WARNING	   logger.warning()
 ERROR	     logger.error()	      
 CRITICAL	 logger.critical()	 
 ```
+
+## API 
+
+- Dans `venv` activé, installer Python FastAPI :
+`pip install fastapi "uvicorn[standard]"`
+
+- Lancer le serveur sur port 8001: `uvicorn api:app --reload --port 8001`
+
+- Check les tests: `python -m unittest discover`
+- Mets à jour `requirements.txt` : `pip freeze > requirements.txt`
+
