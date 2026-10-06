@@ -53,7 +53,7 @@ with tab2:
     number = st.text_input("Numéro de compte")
     balance = st.text_input("Solde initial", value="0.00")
     if st.button("Ouvrir le compte"):
-        value = parse_amount(balance)
+        value = parse_amount(balance, allow_zero=True)
         if value is None:
             st.error("Solde initial invalide")
         else: 
