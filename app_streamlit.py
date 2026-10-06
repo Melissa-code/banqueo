@@ -1,6 +1,13 @@
 import requests
 import streamlit as st
 
+# Set page configuration (à mettre en haut du fichier)
+st.set_page_config(
+    page_title="Banqueo",
+    page_icon="🏦",
+    layout="centered",
+)
+
 API = "http://127.0.0.1:8001"
 
 st.title("🏦 Banqueo")
