@@ -95,7 +95,8 @@ CRITICAL	 logger.critical()
   par l'API et le valident (erreur 422 si le format est incorrect)
 - Les `ValueError` levées par `bank/` sont converties en codes HTTP (404, 409)
 
-Les données sont en mémoire : elles sont perdues au redémarrage du serveur.
+Les données sont en mémoire : elles sont perdues au redémarrage du serveur 
+(pour l'instant)
 
 
 ### Tests
