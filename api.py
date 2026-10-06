@@ -24,6 +24,18 @@ class AmountIn(BaseModel):
     amount: Decimal
 
 
+@app.get("/clients/{client_id}",
+    summary="Obtenir un client par ID",
+    description="Renvoie les informations d'un client par ID. Renvoie 404 si le client n'existe pas."
+)
+def get_client(client_id: int):
+    try:
+        client = bank.get_client_by_id(client_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    return {"id": client.id, "firstname": client.firstname, "lastname": client.lastname}
+
+
 @app.post("/clients", 
     status_code=201, 
     summary="Créer un client",
@@ -35,6 +47,40 @@ def create_client(data: ClientIn):
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
     return {"id": client.id, "firstname": client.firstname, "lastname": client.lastname}
+
+
+@app.get("/clients/",
+    summary="Lister tous les clients",
+    description="Renvoie la liste de tous les clients."
+)
+def list_clients():
+    return [
+        {"id": client.id, "firstname": client.firstname, "lastname": client.lastname}
+        for client in bank.get_all_clients()
+    ]
+
+
+@app.get("/accounts/{account_number}",
+    summary="Obtenir un compte par numéro",
+    description="Renvoie les informations d'un compte par numéro. Renvoie 404 si le compte n'existe pas."
+)
+def get_account(account_number: str):
+    try:
+        account = bank.get_account_by_number(account_number)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    return {"account_name": account.account_name, "account_number": account.account_number, "balance": str(account.balance)}
+
+
+@app.get("/accounts/",
+    summary="Lister tous les comptes",
+    description="Renvoie la liste de tous les comptes."
+)
+def list_accounts():
+    return [
+        {"account_number": account.account_number, "balance": str(account.balance)}
+        for account in bank.get_all_accounts()
+    ]
 
 
 @app.post("/clients/{client_id}/accounts", 
@@ -54,6 +100,21 @@ def open_account(client_id: int, data: AccountIn):
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
     return {"account_number": account.account_number, "balance": str(account.balance)}
+
+
+@app.get("/clients/{client_id}/accounts",
+    summary="Lister tous les comptes d'un client",
+    description="Renvoie la liste de tous les comptes d'un client. Renvoie 404 si le client n'existe pas."
+)
+def list_client_accounts(client_id: int):
+    try:
+        client = bank.get_client_by_id(client_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    return [
+        {"account_number": account.account_number, "balance": str(account.balance)}
+        for account in client.get_all_accounts()
+    ]
 
 
 @app.get("/clients/{client_id}/balance", 
@@ -116,3 +177,27 @@ def history(account_number: str):
         }
         for op in account.get_history()
     ]
+
+
+@app.delete("/clients/{client_id}",
+    summary="Supprimer un client",
+    description="Supprime un client et tous ses comptes. Renvoie 404 si le client n'existe pas."
+)
+def delete_client(client_id: int):
+    try:
+        bank.delete_client_by_id(client_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    return {"message": f"Client avec l'ID {client_id} supprimé."}
+
+
+@app.delete("/accounts/{account_number}",
+    summary="Supprimer un compte",
+    description="Supprime un compte. Renvoie 404 si le compte n'existe pas."
+)   
+def delete_account(account_number: str):
+    try:
+        bank.delete_account_by_number(account_number)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    return {"message": f"Compte avec le numéro {account_number} supprimé."}
