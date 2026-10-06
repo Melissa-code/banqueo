@@ -16,22 +16,32 @@ st.title("🏦 Banqueo")
 tab0, tab1, tab2, tab3 = st.tabs(["Accueil", "Client", "Compte", "Opérations"])
 
 
-def parse_amount(text: str) -> Decimal | None:
+def parse_amount(text: str, allow_zero: bool = False) -> Decimal | None:
     try:
-        # accepte virgule 
-        value = Decimal(text.replace(",", ".")) 
+        value = Decimal(text.strip().replace(" ", "").replace(",", "."))
     except InvalidOperation:
         return None
-    return value if value > 0 else None
+    if value < 0 or (value == 0 and not allow_zero):
+        return None
+    return value
 
-# Home tab
+def error_message(r) -> str:
+    detail = r.json().get("detail")
+    if isinstance(detail, list):
+        return "Données invalides : " + "; ".join(d["msg"] for d in detail)
+    return str(detail)
+
+
+# ------------ Home tab ------------ #
+
 with tab0:
     st.subheader("Bienvenue sur Banqueo !")
     st.write("Gérez vos clients et leurs comptes bancaires en quelques clics.")
 
     st.info("Commencez par créer un client dans l'onglet « Client ».")
 
-# CLient tab 
+# ------------ CLient tab ---------- #
+
 with tab1:
     st.subheader("Créer un client")
     client_id = st.number_input("ID", min_value=1, step=1, key="cid")
@@ -39,13 +49,15 @@ with tab1:
     lastname = st.text_input("Nom")
     if st.button("Créer le client"):
         r = requests.post(f"{API}/clients", json={
-            "id": int(client_id), "firstname": firstname, "lastname": lastname})
+            "id": int(client_id), "firstname": firstname, "lastname": lastname
+        })
         if r.status_code == 201:
             st.success("Client créé !")
         else:
-            st.error(r.json()["detail"])
+            st.error(error_message(r))
 
-# Account tab
+# ------------ Account tab ----------- #
+
 with tab2:
     st.subheader("Ouvrir un compte")
     cid = st.number_input("ID du client", min_value=1, step=1, key="cid2")
@@ -63,9 +75,10 @@ with tab2:
             if r.status_code == 201:
                 st.success(f"Compte ouvert, solde : {r.json()['balance']} €")
             else:
-                st.error(r.json()["detail"])
+                st.error(error_message(r))
 
-# Operations tab
+# ------------ Operations tab ----------- #
+
 with tab3:
     st.subheader("Dépôt / retrait")
     acc = st.text_input("Numéro de compte", key="acc")
@@ -77,19 +90,20 @@ with tab3:
             st.error("Montant invalide")
         else: 
             r = requests.post(f"{API}/accounts/{acc}/deposit", json={"amount": str(value)})
-            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(r.json()["detail"])
+            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(error_message(r))
     if col2.button("Retirer"):
         value = parse_amount(amount)
         if value is None:
             st.error("Montant invalide")
         else:
             r = requests.post(f"{API}/accounts/{acc}/withdraw", json={"amount": str(value)})
-            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(r.json()["detail"])
+            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(error_message(r))
 
     if st.button("Voir l'historique"):
         r = requests.get(f"{API}/accounts/{acc}/history")
         if r.ok:
             st.table(r.json())
         else:
-            st.error(r.json()["detail"])
+            st.error(error_message(r))
+
 
