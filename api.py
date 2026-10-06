@@ -25,6 +25,12 @@ class AccountIn(BaseModel):
 class AmountIn(BaseModel):
     amount: Decimal
 
+# --------------------- Home --------------------- #
+
+@app.get("/", include_in_schema=False)
+def root():
+    return {"message": "Bienvenue sur Banqueo !"}
+
 # --------------------- Client --------------------- #
 
 @app.get("/clients/",

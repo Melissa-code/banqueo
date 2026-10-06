@@ -26,7 +26,7 @@ Les utilisateurs pourront:
 ## Prérequis 
 
 - Python 3.11.9
-- Pip 24.0
+- Pip 26.2.1
 
 
 ## Créer un environnement virtuel
@@ -102,3 +102,40 @@ Les données sont en mémoire : elles sont perdues au redémarrage du serveur
 ### Tests
 
 Lancer les tests : `python -m unittest discover`
+
+
+## Interface web Streamlit
+
+Interface graphique qui appelle l'API avec `requests`.
+Documentation : [Streamlit](https://docs.streamlit.io/get-started/installation)
+
+### Installation
+
+Dans le `venv`activé, installer `
+ (requests sert à appeler ton API depuis Streamlit)
+```bash
+pip install streamlit requests
+
+pip freeze > requirements.txt
+```
+
+### Lancer l'application
+
+```
+# Relancer l'API
+uvicorn api:app --reload --port 8001
+
+# Lancer l'interface
+streamlit run app_streamlit.py
+```
+Ouvrir http://localhost:8501
+
+### Fonctionnalités
+
+- Créer un client
+- Ouvrir un compte
+- Déposer, retirer, consulter l'historique
+
+> Les données sont en mémoire : elles sont perdues au redémarrage de l'API.
+
+<img src="assets/images/banqueo.png" alt="Accueil de Banqueo" width="600">
