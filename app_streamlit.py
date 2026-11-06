@@ -1,7 +1,7 @@
-from decimal import Decimal, InvalidOperation
-
 import requests
 import streamlit as st
+
+import utils
 
 # Set page configuration (à mettre en haut du fichier)
 st.set_page_config(
@@ -10,26 +10,27 @@ st.set_page_config(
     layout="centered",
 )
 
-API = "http://127.0.0.1:8001"
+# API = "http://127.0.0.1:8001"
+API = utils.API
 
 st.title("🏦 Banqueo")
 tab0, tab1, tab2, tab3 = st.tabs(["Accueil", "Client", "Compte", "Opérations"])
 
 
-def parse_amount(text: str, allow_zero: bool = False) -> Decimal | None:
-    try:
-        value = Decimal(text.strip().replace(" ", "").replace(",", "."))
-    except InvalidOperation:
-        return None
-    if value < 0 or (value == 0 and not allow_zero):
-        return None
-    return value
+# def parse_amount(text: str, allow_zero: bool = False) -> Decimal | None:
+#     try:
+#         value = Decimal(text.strip().replace(" ", "").replace(",", "."))
+#     except InvalidOperation:
+#         return None
+#     if value < 0 or (value == 0 and not allow_zero):
+#         return None
+#     return value
 
-def error_message(r) -> str:
-    detail = r.json().get("detail")
-    if isinstance(detail, list):
-        return "Données invalides : " + "; ".join(d["msg"] for d in detail)
-    return str(detail)
+# def error_message(r) -> str:
+#     detail = r.json().get("detail")
+#     if isinstance(detail, list):
+#         return "Données invalides : " + "; ".join(d["msg"] for d in detail)
+#     return str(detail)
 
 
 # ------------ Home tab ------------ #
@@ -54,7 +55,7 @@ with tab1:
         if r.status_code == 201:
             st.success("Client créé !")
         else:
-            st.error(error_message(r))
+            st.error(utils.error_message(r))
 
 # ------------ Account tab ----------- #
 
@@ -65,7 +66,7 @@ with tab2:
     number = st.text_input("Numéro de compte")
     balance = st.text_input("Solde initial", value="0.00")
     if st.button("Ouvrir le compte"):
-        value = parse_amount(balance, allow_zero=True)
+        value = utils.parse_amount(balance, allow_zero=True)
         if value is None:
             st.error("Solde initial invalide")
         else: 
@@ -75,7 +76,7 @@ with tab2:
             if r.status_code == 201:
                 st.success(f"Compte ouvert, solde : {r.json()['balance']} €")
             else:
-                st.error(error_message(r))
+                st.error(utils.error_message(r))
 
 # ------------ Operations tab ----------- #
 
@@ -85,25 +86,25 @@ with tab3:
     amount = st.text_input("Montant", value="10.00")
     col1, col2 = st.columns(2)
     if col1.button("Déposer"):
-        value = parse_amount(amount)
+        value = utils.parse_amount(amount)
         if value is None:
             st.error("Montant invalide")
         else: 
             r = requests.post(f"{API}/accounts/{acc}/deposit", json={"amount": str(value)})
-            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(error_message(r))
+            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(utils.error_message(r))
     if col2.button("Retirer"):
-        value = parse_amount(amount)
+        value = utils.parse_amount(amount)
         if value is None:
             st.error("Montant invalide")
         else:
             r = requests.post(f"{API}/accounts/{acc}/withdraw", json={"amount": str(value)})
-            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(error_message(r))
+            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(utils.error_message(r))
 
     if st.button("Voir l'historique"):
         r = requests.get(f"{API}/accounts/{acc}/history")
         if r.ok:
             st.table(r.json())
         else:
-            st.error(error_message(r))
+            st.error(utils.error_message(r))
 
 
