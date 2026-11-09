@@ -39,7 +39,7 @@ with tab0:
     st.subheader("Bienvenue sur Banqueo !")
     st.write("Gérez vos clients et leurs comptes bancaires en quelques clics.")
 
-    st.info("Commencez par créer un client dans l'onglet « Client ».")
+    st.info("Commencez par créer un nouveau client dans l'onglet « Ajouter un client ».")
 
 # ------------ CLient tab ---------- #
 
