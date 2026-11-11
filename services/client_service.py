@@ -1,9 +1,11 @@
 import requests
-import streamlit as st
 import utils
 import re
+from dataclasses import dataclass
 
 API = utils.API
+
+# ======== Create client =======
 
 NAME_PATTERN = re.compile(r"^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$")
 
@@ -13,7 +15,7 @@ NAME_VALIDATE = (
 )
 
 def validate_client(client_id: int, lastname: str, firstname: str) -> str | None:
-    """Renvoie un message d'erreur ou None si valide"""
+    """Renvoie un message d'erreur"""
     if client_id is None or not lastname.strip() or not firstname.strip():
         return "Tous les champs sont obligatoires"
     if not NAME_PATTERN.fullmatch(lastname.strip()) or not NAME_PATTERN.fullmatch(firstname.strip()):
@@ -35,3 +37,27 @@ def create_client(client_id: int, lastname: str, firstname: str) -> tuple[bool, 
         return True, "Le client a été ajouté avec succès"
     return False, utils.error_message(r)
 
+
+# ======== Profile client ========
+
+def get_client(client_id: int) -> dict | None:
+    """"""
+    try:
+        r = requests.get(f"{utils.API}/clients/{client_id}", timeout=5)
+    except requests.RequestException:
+        return None
+    
+    if r.status_code != 200:
+        return None
+    
+    return r.json() # client (id, name, firstname)
+
+
+# ======== List clients =========
+
+def get_clients() -> list:
+    try:
+        r = requests.get(f"{utils.API}/clients", timeout=5)
+    except requests.RequestException:
+        return []
+    return r.json() if r.status_code == 200 else []

@@ -1,12 +1,9 @@
-import requests
 import streamlit as st
-import utils
 import services.client_service as client_service
-import re
 
 
-st.title("👤 Ajouter un client")
-st.write("") 
+st.title(f":material/person_add: Ajouter un client")
+st.write("") # saut de ligne pour le moment
 
 with st.form("add_client_form", border=True):
     st.markdown("##### Informations du client")
@@ -57,6 +54,6 @@ with st.form("add_client_form", border=True):
             if ok:
                 st.success(message)
                 st.session_state["client_id"] = int(client_id)
-                st.page_link("pages/2_Client.py", label="Voir la fiche du client →")
+                st.page_link("pages/Clients/2_Voir_la_fiche_client.py", label="Voir la fiche du client →")
             else:
                 st.error(message)

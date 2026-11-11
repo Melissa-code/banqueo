@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from bank.bank import Bank
 from bank.client import Client
@@ -12,10 +12,14 @@ bank = Bank(1, "Banqueo")  # perdu à chaque redémarrage
 
 # ------------- Pydantic models for request validation -------------- #
 
+NAME_PATTERN = r"^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$"
+
 class ClientIn(BaseModel):
-    id: int
-    firstname: str
-    lastname: str
+    model_config = ConfigDict(str_strip_whitespace=True)  # pas d espace
+
+    id: int = Field(gt=0) # ID positif
+    firstname: str = Field(min_length=1, max_length=100, pattern=NAME_PATTERN)
+    lastname: str = Field(min_length=1, max_length=100, pattern=NAME_PATTERN)
 
 class AccountIn(BaseModel):
     account_name: str

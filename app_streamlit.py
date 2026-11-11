@@ -1,110 +1,20 @@
-import requests
 import streamlit as st
 
-import utils
+st.set_page_config(page_title="Banqueo", page_icon="🏦", layout="centered")
 
-# Set page configuration (à mettre en haut du fichier)
-st.set_page_config(
-    page_title="Banqueo",
-    page_icon="🏦",
-    layout="centered",
-)
+pages = {
+    "": [
+        st.Page("pages/Accueil.py", title="Accueil", icon=":material/home:", default=True),
+    ],
+    "Clients": [
+        st.Page("pages/Clients/1_Liste_des_clients.py", title="Liste des clients", icon=":material/group:"),
+        st.Page("pages/Clients/2_Voir_la_fiche_client.py", title="Fiche client", icon=":material/person:"),
+        st.Page("pages/Clients/3_Ajouter_un_client.py", title="Ajouter un client", icon=":material/person_add:"),
+    ],
+    "Comptes": [
+         st.Page("pages/Comptes/4_Operations.py", title="Opérations", icon=":material/payments:"),
+    ],
+}
 
-# API = "http://127.0.0.1:8001"
-API = utils.API
-
-st.title("🏦 Banqueo")
-tab0, tab1, tab2, tab3 = st.tabs(["Accueil", "Client", "Compte", "Opérations"])
-
-
-# def parse_amount(text: str, allow_zero: bool = False) -> Decimal | None:
-#     try:
-#         value = Decimal(text.strip().replace(" ", "").replace(",", "."))
-#     except InvalidOperation:
-#         return None
-#     if value < 0 or (value == 0 and not allow_zero):
-#         return None
-#     return value
-
-# def error_message(r) -> str:
-#     detail = r.json().get("detail")
-#     if isinstance(detail, list):
-#         return "Données invalides : " + "; ".join(d["msg"] for d in detail)
-#     return str(detail)
-
-
-# ------------ Home tab ------------ #
-
-with tab0:
-    st.subheader("Bienvenue sur Banqueo !")
-    st.write("Gérez vos clients et leurs comptes bancaires en quelques clics.")
-
-    st.info("Commencez par créer un nouveau client dans l'onglet « Ajouter un client ».")
-
-# ------------ CLient tab ---------- #
-
-with tab1:
-    st.subheader("Créer un client")
-    client_id = st.number_input("ID", min_value=1, step=1, key="cid")
-    firstname = st.text_input("Prénom")
-    lastname = st.text_input("Nom")
-    if st.button("Créer le client"):
-        r = requests.post(f"{API}/clients", json={
-            "id": int(client_id), "firstname": firstname, "lastname": lastname
-        })
-        if r.status_code == 201:
-            st.success("Client créé !")
-        else:
-            st.error(utils.error_message(r))
-
-# ------------ Account tab ----------- #
-
-with tab2:
-    st.subheader("Ouvrir un compte")
-    cid = st.number_input("ID du client", min_value=1, step=1, key="cid2")
-    name = st.text_input("Nom du compte (ex : Livret A)")
-    number = st.text_input("Numéro de compte")
-    balance = st.text_input("Solde initial", value="0.00")
-    if st.button("Ouvrir le compte"):
-        value = utils.parse_amount(balance, allow_zero=True)
-        if value is None:
-            st.error("Solde initial invalide")
-        else: 
-            r = requests.post(f"{API}/clients/{int(cid)}/accounts", json={
-                "account_name": name, "account_number": number,
-                "initial_balance": str(value)})
-            if r.status_code == 201:
-                st.success(f"Compte ouvert, solde : {r.json()['balance']} €")
-            else:
-                st.error(utils.error_message(r))
-
-# ------------ Operations tab ----------- #
-
-with tab3:
-    st.subheader("Dépôt / retrait")
-    acc = st.text_input("Numéro de compte", key="acc")
-    amount = st.text_input("Montant", value="10.00")
-    col1, col2 = st.columns(2)
-    if col1.button("Déposer"):
-        value = utils.parse_amount(amount)
-        if value is None:
-            st.error("Montant invalide")
-        else: 
-            r = requests.post(f"{API}/accounts/{acc}/deposit", json={"amount": str(value)})
-            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(utils.error_message(r))
-    if col2.button("Retirer"):
-        value = utils.parse_amount(amount)
-        if value is None:
-            st.error("Montant invalide")
-        else:
-            r = requests.post(f"{API}/accounts/{acc}/withdraw", json={"amount": str(value)})
-            st.success(f"Nouveau solde : {r.json()['balance']} €") if r.ok else st.error(utils.error_message(r))
-
-    if st.button("Voir l'historique"):
-        r = requests.get(f"{API}/accounts/{acc}/history")
-        if r.ok:
-            st.table(r.json())
-        else:
-            st.error(utils.error_message(r))
-
-
+pg = st.navigation(pages)
+pg.run()

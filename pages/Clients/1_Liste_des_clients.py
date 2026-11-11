@@ -7,7 +7,7 @@ API = utils.API
 
 st.title("👤 Clients")
 
-# ---------- READ ----------
+
 
 st.subheader("Liste des clients")
 
