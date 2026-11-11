@@ -20,6 +20,13 @@ st.divider()
 st.subheader("Comptes")
 st.info("Aucun compte pour le moment.") 
 
+# for account in accounts:
+#     with st.container(border=True):
+#         c1, c2 = st.columns([3, 1])
+#         c1.markdown(f"**{account['account_name']}**")
+#         c1.caption(account["account_number"])
+#         c2.metric("Solde", f"{account['balance']} €")
+
 # ---------- Actions ----------
 
 col1, col2 = st.columns(2)

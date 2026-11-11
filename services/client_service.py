@@ -55,9 +55,10 @@ def get_client(client_id: int) -> dict | None:
 
 # ======== List clients =========
 
-def get_clients() -> list:
+def get_clients() -> list | None:
+    """Liste des clients ou None si l'API est inaccessible ou en erreur"""
     try:
         r = requests.get(f"{utils.API}/clients", timeout=5)
     except requests.RequestException:
-        return []
-    return r.json() if r.status_code == 200 else []
+        return None
+    return r.json() if r.status_code == 200 else None
