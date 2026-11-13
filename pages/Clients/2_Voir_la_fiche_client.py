@@ -1,6 +1,6 @@
 import streamlit as st
-import services.client_service as client_service
 
+from services import client_service
 
 client_id : str = st.session_state.get("client_id")
 client = client_service.get_client(client_id)
@@ -30,5 +30,21 @@ st.info("Aucun compte pour le moment.")
 # ---------- Actions ----------
 
 col1, col2 = st.columns(2)
-col1.button("Modifier le client", icon=":material/edit:", width="stretch")
-col2.button("Supprimer le client", icon=":material/delete:", width="stretch")
+col1.button(
+    "Modifier le client", 
+    icon=":material/edit:", 
+    width="stretch"
+)
+
+# col2.button(
+#     "Supprimer le client", 
+#     icon=":material/delete:", 
+#     width="stretch",
+# )
+
+if col2.button("Supprimer le client", icon=":material/delete:", width="stretch"):
+    if client_service.remove_client(client_id):
+        st.toast("Client supprimé.", icon=":material/check:")
+        st.switch_page("pages/Clients/1_Liste_des_clients.py")
+    else:
+        st.error("Impossible de supprimer le client.")

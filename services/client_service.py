@@ -1,7 +1,8 @@
-import requests
-import utils
 import re
-from dataclasses import dataclass
+
+import requests
+
+import utils
 
 API = utils.API
 
@@ -37,11 +38,30 @@ def create_client(client_id: int, lastname: str, firstname: str) -> tuple[bool, 
         return True, "Le client a été ajouté avec succès"
     return False, utils.error_message(r)
 
+# ========= Remove client ========
+
+def remove_client(client_id: int) -> tuple[bool, str]:
+    try:
+        r = requests.delete(f"{utils.API}/clients/{client_id}", timeout=5)
+    except requests.RequestException:
+        return False, "Connexion à l'API impossible"
+
+    if r.ok:
+        return True, "Client supprimé"
+    if r.status_code == 404:
+        return False, "Client introuvable"
+
+    #API
+    try:
+        detail = r.json().get("detail", r.text)
+    except ValueError:
+        detail = r.text
+    return False, f"Erreur {r.status_code} : {detail}"
+
 
 # ======== Profile client ========
 
 def get_client(client_id: int) -> dict | None:
-    """"""
     try:
         r = requests.get(f"{utils.API}/clients/{client_id}", timeout=5)
     except requests.RequestException:

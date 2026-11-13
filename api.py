@@ -37,7 +37,7 @@ def root():
 
 # --------------------- Client --------------------- #
 
-@app.get("/clients/",
+@app.get("/clients",
     summary="Lister tous les clients",
     description="Renvoie la liste de tous les clients."
 )
@@ -108,7 +108,8 @@ def delete_client(client_id: int):
     try:
         bank.delete_client_by_id(client_id)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
+        # detail imposé par FastAPI (clé pour lever erreurs) ex {"detail": "Client 5 introuvable"}
+        raise HTTPException(status_code=404, detail=str(e)) from e 
     return {"message": f"Client avec l'ID {client_id} supprimé."}
 
 # ----------------- Account ----------------- #

@@ -1,10 +1,9 @@
 import streamlit as st
 
-import services.client_service as client_service
-
-st.write("TEST : cette page est bien chargée")
+from services import client_service
 
 st.title(":material/group: Liste des clients")
+st.write("") # saut de ligne pour le moment
 
 # ---------- btn ajouter un client ----------
 
@@ -13,25 +12,18 @@ st.page_link(
     label="Ajouter un client",
     icon=":material/person_add:",
 )
+st.write("") # saut de ligne pour le moment
 
 # ---------- Data clients ----------
 
-# clients = client_service.get_clients()
-
-import requests
-import utils
-
-st.write("API utilisée :", utils.API)
-r = requests.get(f"{utils.API}/clients", timeout=5)
-st.write("Statut :", r.status_code)
-st.write("Réponse :", r.text)
-clients = r.json() if r.status_code == 200 else None
+clients = client_service.get_clients()
 
 if clients is None :
     st.error("Impossible de récupérer les clients.")
     st.stop()
 if not clients:
     st.info("Aucun client enregistré.")
+    st.write("") # saut de ligne pour le moment
     st.stop()
 
 # ---------- Rechercher ----------
@@ -49,7 +41,6 @@ if q:
     ]
 
 st.caption(f"{len(clients)} client(s)")
-
 
 # ---------- Tableau ----------
 

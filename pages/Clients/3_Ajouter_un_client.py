@@ -1,8 +1,8 @@
 import streamlit as st
-import services.client_service as client_service
 
+from services import client_service
 
-st.title(f":material/person_add: Ajouter un client")
+st.title(":material/person_add: Ajouter un client")
 st.write("") # saut de ligne pour le moment
 
 with st.form("add_client_form", border=True):
