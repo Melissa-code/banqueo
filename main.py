@@ -1,8 +1,8 @@
 import logging
 from decimal import Decimal
 
-from bank.bank import Bank
-from bank.client import Client
+from bank.Bank import Bank
+from bank.Client import Client
 from config.dictConfig import logger
 
 logger = logging.getLogger(__name__)

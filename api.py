@@ -3,8 +3,8 @@ from decimal import Decimal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
-from bank.bank import Bank
-from bank.client import Client
+from bank.Bank import Bank
+from bank.Client import Client
 
 app = FastAPI(title="Banqueo")
 bank = Bank(1, "Banqueo")  # perdu à chaque redémarrage
@@ -113,6 +113,12 @@ def delete_client(client_id: int):
     return {"message": f"Client avec l'ID {client_id} supprimé."}
 
 # ----------------- Account ----------------- #
+
+@app.get("/account-types", summary="Types de comptes et plafonds")
+def list_account_types():
+    """Types de comptes avec leurs plafonds (dict Bank)"""
+    return {name: str(cap) for name, cap in Bank.MAX_BALANCE.items()}
+
 
 @app.get("/accounts/",
     summary="Lister tous les comptes",

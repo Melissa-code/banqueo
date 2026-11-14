@@ -30,7 +30,7 @@ def create_client(client_id: int, lastname: str, firstname: str) -> tuple[bool, 
             "id": int(client_id),
             "lastname": lastname.strip(),
             "firstname": firstname.strip(),
-        })
+        }, timeout=5)
     except requests.RequestException:
         return False, "Connexion à l'API impossible"
 

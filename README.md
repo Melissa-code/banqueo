@@ -28,6 +28,9 @@ Les utilisateurs pourront:
 - Python 3.11.9
 - Pip 26.2.1
 
+### outils
+
+- Pour les icônes: [Material Symbols](https://fonts.google.com/icons)
 
 ## Créer un environnement virtuel
 
@@ -95,8 +98,7 @@ CRITICAL	 logger.critical()
   par l'API et le valident (erreur 422 si le format est incorrect)
 - Les `ValueError` levées par `bank/` sont converties en codes HTTP (404, 409)
 
-Les données sont en mémoire : elles sont perdues au redémarrage du serveur 
-(pour l'instant)
+Les données sont en mémoire : elles sont perdues au redémarrage du serveur pour l'instant
 
 
 ### Tests

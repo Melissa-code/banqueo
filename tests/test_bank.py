@@ -1,8 +1,8 @@
 import unittest
 from decimal import Decimal
 
-from bank.bank import Bank
-from bank.client import Client
+from bank.Bank import Bank
+from bank.Client import Client
 
 
 class TestBank(unittest.TestCase):

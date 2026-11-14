@@ -1,8 +1,8 @@
 import unittest
 from decimal import Decimal
 
-from bank.account import Account
-from bank.client import Client
+from bank.Account import Account
+from bank.Client import Client
 
 from .factories.account_factory import AccountFactory
 from .factories.client_factory import ClientFactory

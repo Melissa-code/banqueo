@@ -1,11 +1,7 @@
 import streamlit as st
 
 # Set page configuration (à mettre en haut du fichier)
-st.set_page_config(
-    page_title="Banqueo",
-    page_icon="🏦",
-    layout="centered",
-)
+st.set_page_config(page_title="Banqueo", page_icon="🏦", layout="centered",)
 
 st.title("🏦 Banqueo")
 

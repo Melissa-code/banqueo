@@ -12,7 +12,8 @@ pages = {
         st.Page("pages/Clients/3_Ajouter_un_client.py", title="Ajouter un client", icon=":material/person_add:"),
     ],
     "Comptes": [
-         st.Page("pages/Comptes/4_Operations.py", title="Opérations", icon=":material/payments:"),
+        st.Page("pages/Comptes/3_Ouvrir_un_compte.py", title="Ouvrir un compte", icon=":material/add_card:"),
+        st.Page("pages/Comptes/4_Operations.py", title="Opérations", icon=":material/payments:"),
     ],
 }
 

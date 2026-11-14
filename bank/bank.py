@@ -1,13 +1,24 @@
 import logging
 from decimal import Decimal
 
-from bank.account import Account
-from bank.client import Client
+from bank.Account import Account
+from bank.Client import Client
 
 logger = logging.getLogger(__name__)
 
 
 class Bank: 
+
+    MAX_BALANCE: dict[str, Decimal] = {
+        "Compte courant": Decimal("200000.00"),
+        "Livret d'Epargne Populaire (LEP)": Decimal("10000.00"),
+        "Livret A": Decimal("22950.00"),
+        "Livret B": Decimal("200000.00"),
+        "Livret de Développement Durable et Solidaire (LDDS)": Decimal("12000.00"),
+        "Livret Jeune": Decimal("1600.00"), 
+        "Compte épargne logement (CEL)": Decimal("15300.00"), 
+        "Plan d'épargne logement (PEL)": Decimal("61200.00"), 
+    }
 
     def __init__(self, id: int, name: str):
         self.id = id
@@ -57,8 +68,12 @@ class Bank:
         return self.accounts.copy()
     
     
-    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: Decimal = Decimal("0.00"), max_balance: Decimal = Decimal("20000.00")) -> Account:
+    def open_account(self, client: Client, account_name: str, account_number: str, initial_balance: Decimal = Decimal("0.00")) -> Account:
         """Ouvre un compte pour un client de la banque"""
+        if account_name not in self.MAX_BALANCE:
+            raise ValueError(f"Type de compte inconnu : {account_name}")
+        max_balance = self.MAX_BALANCE[account_name]
+
         if client not in self.clients:
             logger.warning(f"[Bank ID:{self.id}] open_account(): client {client.firstname} {client.lastname} (ID {client.id}) n'appartient pas à la banque {self.name}")
             raise ValueError(f"Le client {client.firstname} n'appartient pas à la banque {self.name}")
