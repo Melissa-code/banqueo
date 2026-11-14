@@ -49,10 +49,23 @@ def create_account(
             "id": int(client_id),
             "account_number": account_number.strip(),
             "account_name": account_name.strip(),
+            "initial_balance": str(initial_balance),
         }, timeout=5)
     except requests.RequestException:
         return False, "Connexion à l'API impossible"
 
     if r.status_code == 201:
-        return True, f"Le compte {account_name} n° {account_number} a été ouvert avec succès"
+        return True, f"Le compte {account_name} n°{account_number} a été ouvert avec succès"
     return False, utils.error_message(r)
+
+
+
+# ======== List accounts =========
+
+def get_accounts() -> list | None:
+    """Liste des comptes clients ou None si l'API est inaccessible ou en erreur"""
+    try:
+        r = requests.get(f"{utils.API}/accounts", timeout=5)
+    except requests.RequestException:
+        return None
+    return r.json() if r.status_code == 200 else None

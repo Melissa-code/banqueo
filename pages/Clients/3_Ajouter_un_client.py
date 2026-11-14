@@ -18,17 +18,6 @@ with st.form("add_client_form", border=True):
         required=True, 
         width="stretch", 
     )
-    lastname : str = st.text_input(
-        label="Nom", 
-        key="new_last",
-        value="", 
-        max_chars=100, 
-        placeholder="Entrez le nom du nouveau client", 
-        help="Entrez le nom du nouveau client",
-        required=True, 
-        width="stretch", 
-        validate=client_service.NAME_VALIDATE,
-    )
     firstname : str = st.text_input(
         label="Prénom", 
         key="new_first",
@@ -38,6 +27,17 @@ with st.form("add_client_form", border=True):
         help="Entrez le prénom du nouveau client",
         required=True, 
         live=False, 
+        width="stretch", 
+        validate=client_service.NAME_VALIDATE,
+    )
+    lastname : str = st.text_input(
+        label="Nom", 
+        key="new_last",
+        value="", 
+        max_chars=100, 
+        placeholder="Entrez le nom du nouveau client", 
+        help="Entrez le nom du nouveau client",
+        required=True, 
         width="stretch", 
         validate=client_service.NAME_VALIDATE,
     )

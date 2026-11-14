@@ -120,7 +120,7 @@ def list_account_types():
     return {name: str(cap) for name, cap in Bank.MAX_BALANCE.items()}
 
 
-@app.get("/accounts/",
+@app.get("/accounts",
     summary="Lister tous les comptes",
     description="Renvoie la liste de tous les comptes."
 )
