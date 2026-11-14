@@ -2,6 +2,13 @@ import streamlit as st
 
 from services import client_service
 
+client_id : str = st.session_state.get("client_id")
+
+# message (ex success delete client)
+if "flash" in st.session_state:
+    st.success(st.session_state.pop("flash"), icon=":material/check:")
+
+
 st.title(":material/group: Liste des clients")
 st.write("") # saut de ligne pour le moment
 
