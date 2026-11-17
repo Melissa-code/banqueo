@@ -60,6 +60,30 @@ def create_account(
 
 
 
+# ======== Deposit / withdraw =========
+
+def deposit(account_number: str, amount: Decimal) -> tuple[bool, str]:
+    """Dépose un montant sur un compte. Renvoie (succès, message)"""
+    try:
+        r = requests.post(f"{utils.API}/accounts/{account_number}/deposit", json={"amount": str(amount)}, timeout=5)
+    except requests.RequestException:
+        return False, "API indisponible."
+    if r.status_code == 200:
+        return True, f"Dépôt de {amount} € effectué."
+    return False, utils.error_message(r)
+
+
+def withdraw(account_number: str, amount: Decimal) -> tuple[bool, str]:
+    """Retire un montant d'un compte. Renvoie (succès, message)"""
+    try:
+        r = requests.post(f"{utils.API}/accounts/{account_number}/withdraw", json={"amount": str(amount)}, timeout=5)
+    except requests.RequestException:
+        return False, "API indisponible."
+    if r.status_code == 200:
+        return True, f"Retrait de {amount} € effectué."
+    return False, utils.error_message(r)
+
+
 # ======== List accounts =========
 
 def get_accounts() -> list | None:
