@@ -51,8 +51,11 @@ st.caption(f"{len(clients)} client(s)")
 
 # ---------- Tableau ----------
 
-st.dataframe(
+event = st.dataframe(
     clients,
+    key="clients_table",
+    on_select="rerun",
+    selection_mode="single-row",
     hide_index=True,
     width="stretch",
     column_order=["id", "lastname", "firstname"],
@@ -62,3 +65,19 @@ st.dataframe(
         "firstname": st.column_config.TextColumn("Prénom"),
     },
 )
+
+# ---------- Voir la fiche du client sélectionné ----------
+
+selected_rows = event.selection.rows
+if selected_rows:
+    selected_client = clients[selected_rows[0]]
+    st.write("") # saut de ligne
+    if st.button(
+        f"Voir la fiche client",
+        icon=":material/person:",
+        type="primary",
+    ):
+        st.session_state["client_id"] = selected_client["id"]
+        st.switch_page("pages/Clients/2_Voir_la_fiche_client.py")
+else:
+    st.caption("Sélectionnez une ligne du tableau pour voir la fiche client.")

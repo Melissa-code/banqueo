@@ -17,12 +17,12 @@ st.write("") # saut de ligne
 account_number = st.session_state.get("account_number")
 
 if not account_number:
-    st.info("Aucun compte sélectionné.")
+    st.info("Aucun compte sélectionné")
     st.stop()
 
 account = account_service.get_account(account_number)
 if account is None:
-    st.error("Impossible de récupérer ce compte.")
+    st.error("Impossible de récupérer ce compte")
     st.stop()
 
 # ---------- Client titulaire du compte ----------
