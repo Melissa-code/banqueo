@@ -11,13 +11,13 @@ class Bank:
 
     MAX_BALANCE: dict[str, Decimal] = {
         "Compte courant": Decimal("200000.00"),
-        "Livret d'Epargne Populaire (LEP)": Decimal("10000.00"),
+        "Livret d'Epargne Populaire LEP": Decimal("10000.00"),
         "Livret A": Decimal("22950.00"),
         "Livret B": Decimal("200000.00"),
-        "Livret de Développement Durable et Solidaire (LDDS)": Decimal("12000.00"),
+        "Livret de Développement Durable et Solidaire LDDS": Decimal("12000.00"),
         "Livret Jeune": Decimal("1600.00"), 
-        "Compte épargne logement (CEL)": Decimal("15300.00"), 
-        "Plan d'épargne logement (PEL)": Decimal("61200.00"), 
+        "Compte épargne logement CEL": Decimal("15300.00"), 
+        "Plan d'épargne logement PEL": Decimal("61200.00"), 
     }
 
     def __init__(self, id: int, name: str):

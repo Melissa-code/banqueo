@@ -51,8 +51,11 @@ st.caption(f"{len(accounts)} compte(s)")
 
 # ---------- Tableau ----------
 
-st.dataframe(
+event = st.dataframe(
     accounts,
+    key="accounts_table",
+    on_select="rerun",
+    selection_mode="single-row",
     hide_index=True,
     width="stretch",
     column_order=[
@@ -64,11 +67,28 @@ st.dataframe(
         "client_lastname"
     ],
     column_config={
-        "account_number": st.column_config.TextColumn("Numéro de compte"),
+        "account_number": st.column_config.TextColumn("N° de compte"),
         "account_name": st.column_config.TextColumn("Nom du compte"),
-        "balance": st.column_config.TextColumn("Solde du compte"),
-        "client_id": st.column_config.NumberColumn("ID client", format="%d"),
-        "client_firstname": st.column_config.TextColumn("Prénom du client"),
-        "client_lastname": st.column_config.TextColumn("Nom du client"),
+        "balance": st.column_config.TextColumn("Solde (€)"),
+        "client_id": st.column_config.NumberColumn("N° client", format="%d"),
+        "client_firstname": st.column_config.TextColumn("Prénom"),
+        "client_lastname": st.column_config.TextColumn("Nom"),
     },
 )
+
+# ---------- Voir le compte sélectionné ----------
+
+selected_rows = event.selection.rows
+if selected_rows:
+    selected_account = accounts[selected_rows[0]]
+    st.write("") # saut de ligne
+
+    if st.button(
+        f"Voir le compte n° {selected_account['account_number']}",
+        icon=":material/visibility:",
+        type="primary",
+    ):
+        st.session_state["account_number"] = selected_account["account_number"]
+        st.switch_page("pages/Comptes/2_Voir_le_compte.py")
+else:
+    st.caption("Sélectionnez une ligne du tableau pour voir le détail du compte.")

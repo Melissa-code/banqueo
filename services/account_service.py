@@ -69,3 +69,21 @@ def get_accounts() -> list | None:
     except requests.RequestException:
         return None
     return r.json() if r.status_code == 200 else None
+
+
+def get_account(account_number: str) -> dict | None:
+    """Détail d'un compte ou None si introuvable / API indisponible"""
+    try:
+        r = requests.get(f"{utils.API}/accounts/{account_number}", timeout=5)
+    except requests.RequestException:
+        return None
+    return r.json() if r.status_code == 200 else None
+
+
+def get_account_history(account_number: str) -> list | None:
+    """Opérations d'un compte ou None si introuvable / API indisponible"""
+    try:
+        r = requests.get(f"{utils.API}/accounts/{account_number}/history", timeout=5)
+    except requests.RequestException:
+        return None
+    return r.json() if r.status_code == 200 else None

@@ -148,7 +148,21 @@ def get_account(account_number: str):
         account = bank.get_account_by_number(account_number)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
-    return {"account_name": account.account_name, "account_number": account.account_number, "balance": str(account.balance)}
+    owner = next(
+        (c for c in bank.get_all_clients()
+         if any(a.account_number == account_number for a in c.get_all_accounts())),
+        None,
+    )
+    return {
+        "account_name": account.account_name,
+        "account_number": account.account_number,
+        "balance": str(account.balance),
+        "max_balance": str(account.max_balance),
+        "history": account.history,
+        "client_id": owner.id if owner else None,
+        "client_firstname": owner.firstname if owner else None,
+        "client_lastname": owner.lastname if owner else None,
+    }
 
 
 @app.post("/clients/{client_id}/accounts", 

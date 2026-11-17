@@ -13,6 +13,7 @@ pages = {
     ],
     "Comptes": [
         st.Page("pages/Comptes/1_Liste_des_comptes.py", title="Liste des comptes", icon=":material/cards_stack:"),
+        st.Page("pages/Comptes/2_Voir_le_compte.py", title="Détail du compte", icon=":material/account_balance_wallet:"),
         st.Page("pages/Comptes/3_Ouvrir_un_compte.py", title="Ouvrir un compte", icon=":material/add_card:"),
     ],
 }
