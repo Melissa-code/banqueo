@@ -1,38 +1,72 @@
-# Banqueo 
-
-## Gestion de comptes bancaires (Console Python)
-
-Banqueo est un programme console en Python permettant de simuler la gestion 
-d’une banque simple.
-
-Le projet vise à pratiquer la programmation orientée objet (POO), les bonnes 
-pratiques de code et la gestion des interactions entre objets.
-
-Les utilisateurs pourront:
-- Créer des clients et leurs comptes bancaires
-- Déposer ou retirer de l’argent
-- Effectuer des transferts entre comptes
-- Consulter l’historique des opérations de chaque compte
+# Banqueo
 
 
-## Objectif
+Banqueo est une application web de gestion bancaire simplifiée. Elle permet aux **gestionnaires** d'une agence de gérer les clients et leurs comptes et prévoit un espace **client** pour consulter ses propres comptes.
 
-- POO en Python: classes, objets, encapsulation, méthodes
-- logique métier : validation de transactions, gestion des erreurs
-- bonnes pratiques : architecture modulaire, tests simples, documentation
-- Versionner le projet avec Git et gérer un environnement isolé `venv`
+#### Aperçus : 
+
+| Accueil | Tableau de bord | Liste des comptes
+|:---:|:---:|:---:|
+| <img src="assets/images/banqueo_home.png" alt="Page d'accueil" width="300"> | <img src="assets/images/banqueo_dashboard.png" alt="Tableau de bord" width="300"> | <img src="assets/images/banqueo_list_accounts.png" alt="Liste de tous les comptes" width="300">
+
+| Ouverture d'un compte | Détail d'un compte | Compte client
+|:---:|:---:|:---:|
+| <img src="assets/images/banqueo_add.png" alt="Formulaire d'ouverture de compte" width="300"> | <img src="assets/images/banqueo_detail_account.png" alt="Détail d'un compte" width="300"> | <img src="assets/images/banqueo_fiche_client.png" alt="Compte client" width="300">
+
+<hr>
+
+L'application est née d'un programme en console (`main.py`) et s'est enrichie
+d'une API web (FastAPI) et d'une interface graphique (Streamlit). La logique
+métier reste dans le dossier `bank/`, partagée par toutes les interfaces.
+
+Les utilisateurs peuvent :
+- créer des clients et leur ouvrir des comptes bancaires avec un type de compte et un plafond, 
+- déposer ou retirer de l'argent dans la limite du plafond et du solde, 
+- consulter l'historique des opérations de chaque compte, 
+- supprimer un compte ou un client avec tous ses comptes, 
+- suivre l'activité de la banque depuis le tableau de bord.
+
+> Rôles prévus : 
+- **gestionnaire** : accès à toutes les pages 
+- **client** : accès limité à ses propres comptes
+
+TODO: authentification (2 rôles)
 
 
-## Prérequis 
+## Objectifs 
+
+- POO en Python : classes, objets, encapsulation, méthodes
+- Logique métier : validation des opérations et gestion des erreurs
+- Architecture modulaire : `bank/` (métier), `api.py` (API), `pages/` et `services/` (interface)
+- Tests unitaires et documentation
+- Versionner le projet avec Git et isoler les dépendances dans un `venv`
+
+
+## Architecture
+
+```
+banqueo/
+├── bank/              # logique métier (Bank, Client, Account)
+├── api.py             # API REST FastAPI (port 8001)
+├── services/          # appels à l'API depuis l'interface (requests)
+├── pages/             # pages Streamlit (Accueil, Clients, Comptes, Tableau de bord)
+├── app_streamlit.py   # point d'entrée Streamlit et menu de navigation
+├── main.py            # ancienne interface console
+└── tests/             # tests unitaires (unittest)
+```
+
+- L'interface Streamlit n'accède jamais directement à `bank/` : elle passe par l'API.
+- Les `ValueError` levées par `bank/` sont converties en codes HTTP (400, 404, 409).
+- Les modèles Pydantic (`ClientIn`, `AccountIn`, `AmountIn`) valident le JSON reçu.
+
+
+## Prérequis
 
 - Python 3.11.9
 - Pip 26.2.1
+- Pour les icônes : [Material Symbols](https://fonts.google.com/icons)
 
-### outils
-
-- Pour les icônes: [Material Symbols](https://fonts.google.com/icons)
-
-## Créer un environnement virtuel
+### Environnement virtuel
 
 ```
 # Créer un environnement virtuel
@@ -45,8 +79,7 @@ venv\Scripts\activate
 deactivate
 ```
 
-
-## Installer des packages 
+### Dépendances
 
 ```
 # Installer un package
@@ -60,84 +93,44 @@ pip install -r requirements.txt
 ```
 
 
-## tests 
+## Lancer l'application
 
-- Utilisation de unittest, run `python -m unittest tests.test_client`
-
-
-## Logs 
-
-- Hiérarchie des niveaux standards du module logging :
-```
-DEBUG	     logger.debug()	      
-INFO	     logger.info()	      
-WARNING	   logger.warning()	  
-ERROR	     logger.error()	      
-CRITICAL	 logger.critical()	 
-```
-
-## API 
-
-### Installation de FastAPI
-
-- Dans `venv` activé, installer Python FastAPI :
-`pip install fastapi "uvicorn[standard]"`
-
-- Lancer le serveur sur port 8001: `uvicorn api:app --reload --port 8001`
-- Mettre à jour les dépendances : `requirements.txt` : `pip freeze > requirements.txt`
-
-- Swagger UI (tests des endpoints) : http://127.0.0.1:8001/docs
-- ReDoc (lecture seule) : http://127.0.0.1:8001/redoc
-
-
-### Structure de l'API
-
-- `api.py` : interface web, à côté de `main.py` : interface console
-- Les deux utilisent la logique métier du dossier `bank/`
-- Modèles Pydantic `ClientIn`, `AccountIn` : ils décrivent le JSON accepté
-  par l'API et le valident (erreur 422 si le format est incorrect)
-- Les `ValueError` levées par `bank/` sont converties en codes HTTP (404, 409)
-
-Les données sont en mémoire : elles sont perdues au redémarrage du serveur pour l'instant
-
-
-### Tests
-
-Lancer les tests : `python -m unittest discover`
-
-
-## Interface web Streamlit
-
-Interface graphique qui appelle l'API avec `requests`.
-Documentation : [Streamlit](https://docs.streamlit.io/get-started/installation)
-
-### Installation
-
-Dans le `venv`activé, installer `
- (requests sert à appeler ton API depuis Streamlit)
-```bash
-pip install streamlit requests
-
-pip freeze > requirements.txt
-```
-
-### Lancer l'application
+Il faut deux terminaux, avec le `venv` activé dans chacun.
 
 ```
-# Relancer l'API
+# Terminal 1 : lancer l'API (port 8001)
 uvicorn api:app --reload --port 8001
 
-# Lancer l'interface
+# Terminal 2 : lancer l'interface web
 streamlit run app_streamlit.py
 ```
-Ouvrir http://localhost:8501
 
-### Fonctionnalités
+Puis ouvrir http://localhost:8501
 
-- Créer un client
-- Ouvrir un compte
-- Déposer, retirer, consulter l'historique
+- Swagger UI (tester les endpoints) : http://127.0.0.1:8001/docs
+- ReDoc (lecture seule) : http://127.0.0.1:8001/redoc
 
 > Les données sont en mémoire : elles sont perdues au redémarrage de l'API.
+> TODO:  base de données 
 
-<img src="assets/images/banqueo.png" alt="Accueil de Banqueo" width="600">
+
+## Tests
+
+```
+python -m unittest discover
+```
+
+Ou un fichier précis : `python -m unittest tests.test_client`
+
+
+## Logs
+
+Niveaux standards du module `logging` :
+
+```
+DEBUG     logger.debug()
+INFO      logger.info()
+WARNING   logger.warning()
+ERROR     logger.error()
+CRITICAL  logger.critical()
+```
