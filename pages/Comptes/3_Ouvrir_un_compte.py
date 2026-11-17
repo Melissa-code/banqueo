@@ -49,6 +49,8 @@ with st.form("add_account_form", border=True):
         help="Le plafond dépend du type de compte choisi",
         width="stretch",
     )
+    if account_name:
+        st.caption(f"Plafond du compte : {types[account_name]} €")
     account_number : str = st.text_input(
         label="Numéro de compte", 
         key="number_account",
@@ -75,24 +77,40 @@ with st.form("add_account_form", border=True):
     )
     
 
-    st.write("") # saut de ligne 
-    submitted = st.form_submit_button("Ouvrir le compte", type="primary",  width="content", )
+    st.write("") # saut de ligne
+    submitted = st.form_submit_button("Ouvrir le compte", type="primary", width="content")
 
     if submitted:
         account_number = account_number.strip().upper()
-        error = account_service.validate_account(client_id, account_name, account_number)
-        if error:
-            st.error(error)
+        if not account_name:
+            st.error("Choisissez un compte")
+        elif initial_balance is None:
+            st.error("Saisissez un solde initial")
+        elif Decimal(str(initial_balance)) > types[account_name]:
+            st.error(f"Le solde initial dépasse le plafond de {types[account_name]} € pour ce type de compte")
         else:
-            ok, message = account_service.create_account(
-                client_id=client_id,
-                account_name=account_name,
-                account_number=account_number,
-                initial_balance=Decimal(str(initial_balance))
-            )
-            if ok:
-                st.success(message)
-                st.session_state["client_id"] = client_id
-                # st.page_link("pages/Comptes/2_Voir_le_compte.py", label="Voir le compte du client →")
+            error = account_service.validate_account(client_id, account_name, account_number)
+            if error:
+                st.error(error)
             else:
-                st.error(message)
+                ok, message = account_service.create_account(
+                    client_id=client_id,
+                    account_name=account_name,
+                    account_number=account_number,
+                    initial_balance=Decimal(str(initial_balance))
+                )
+                if ok:
+                    st.success(message)
+                    st.session_state["client_id"] = client_id
+                    st.session_state["account_number"] = account_number
+                else:
+                    st.error(message)
+
+# ---------- Liens de navigation (sous le formulaire) ----------
+
+st.write("") # saut de ligne
+col_liste_bas, col_detail_bas = st.columns(2)
+col_liste_bas.page_link("pages/Comptes/1_Liste_des_comptes.py", label="Liste des comptes", icon=":material/list:")
+if st.session_state.get("account_number"):
+    col_detail_bas.page_link("pages/Comptes/2_Voir_le_compte.py", label="Voir le compte", icon=":material/visibility:")
+

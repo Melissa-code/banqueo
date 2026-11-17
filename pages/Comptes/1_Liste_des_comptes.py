@@ -9,7 +9,7 @@ if "flash" in st.session_state:
     st.success(st.session_state.pop("flash"), icon=":material/check:")
 
 
-st.title(":material/cards_stack: Liste de tous les comptes clients")
+st.title(":material/cards_stack: Liste des comptes clients")
 st.write("") # saut de ligne 
 
 # ---------- btn add account----------

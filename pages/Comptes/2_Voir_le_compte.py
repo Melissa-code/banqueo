@@ -4,6 +4,7 @@ import streamlit as st
 
 from services import account_service
 
+
 st.title(":material/account_balance_wallet: Détail du compte")
 
 # message après une opération (dépôt / retrait)
@@ -24,7 +25,7 @@ if account is None:
     st.error("Impossible de récupérer ce compte.")
     st.stop()
 
-# ---------- Client titulaire ----------
+# ---------- Client titulaire du compte ----------
 
 client_id = account["client_id"] if account["client_id"] is not None else "—"
 prenom = account["client_firstname"] or "—"
@@ -34,6 +35,30 @@ with st.container(border=True):
     st.markdown(f"#### {account['account_name']} n° {account['account_number']}")
     st.markdown(f"**Solde :** {account['balance']} €")
     st.markdown(f"**Client n°** {client_id} : {prenom} {nom}")
+
+# ---------- Suppression ----------
+
+@st.dialog("Confirmer la suppression")
+def confirm_delete_account(number: str) -> None:
+    st.warning(
+        f"Supprimer le compte **{number}** ? Cette action est irréversible."
+    )
+    c1, c2 = st.columns(2)
+
+    if c1.button("Annuler", width="stretch"):
+        st.rerun()
+
+    if c2.button("Supprimer", type="primary", icon=":material/delete:", width="stretch"):
+        ok, message = account_service.remove_account(number)
+        if ok:
+            st.session_state["flash"] = message
+            st.switch_page("pages/Comptes/1_Liste_des_comptes.py")
+        else:
+            st.error(message)  
+
+
+if st.button("Supprimer le compte", icon=":material/delete:", type="secondary"):
+    confirm_delete_account(account["account_number"])
 
 # ---------- Opérations ----------
 
@@ -78,6 +103,7 @@ with tab_retrait:
 st.write("") # saut de ligne
 st.markdown("##### Historique des opérations")
 history = account_service.get_account_history(account_number)
+
 if history is None:
     st.error("Impossible de récupérer l'historique.")
 elif not history:

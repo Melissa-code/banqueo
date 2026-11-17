@@ -84,6 +84,19 @@ def withdraw(account_number: str, amount: Decimal) -> tuple[bool, str]:
     return False, utils.error_message(r)
 
 
+# ======== Remove account =========
+
+def remove_account(account_number: str) -> tuple[bool, str]:
+    """Supprime un compte. Renvoie (succès, message)"""
+    try:
+        r = requests.delete(f"{utils.API}/accounts/{account_number}", timeout=5)
+    except requests.RequestException:
+        return False, "Connexion à l'API impossible"
+    if r.ok:
+        return True, f"Compte {account_number} supprimé."
+    return False, utils.error_message(r)
+
+
 # ======== List accounts =========
 
 def get_accounts() -> list | None:
