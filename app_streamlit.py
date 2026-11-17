@@ -4,7 +4,8 @@ st.set_page_config(page_title="Banqueo", page_icon="🏦", layout="centered")
 
 pages = {
     "": [
-        st.Page("pages/Accueil.py", title="Accueil", icon=":material/home:", default=True),
+        st.Page("pages/Accueil.py", title="Accueil", icon=":material/account_balance:", default=True),
+        st.Page("pages/Tableau_de_bord.py", title="Tableau de bord", icon=":material/space_dashboard:"),
     ],
     "Clients": [
         st.Page("pages/Clients/1_Liste_des_clients.py", title="Liste des clients", icon=":material/group:"),
