@@ -55,9 +55,20 @@ st.dataframe(
     accounts,
     hide_index=True,
     width="stretch",
-    column_order=["account_number", "account_name", ],
+    column_order=[
+        "account_number", 
+        "account_name", 
+        "balance",
+        "client_id",
+        "client_firstname", 
+        "client_lastname"
+    ],
     column_config={
         "account_number": st.column_config.TextColumn("Numéro de compte"),
         "account_name": st.column_config.TextColumn("Nom du compte"),
+        "balance": st.column_config.TextColumn("Solde du compte"),
+        "client_id": st.column_config.NumberColumn("ID client", format="%d"),
+        "client_firstname": st.column_config.TextColumn("Prénom du client"),
+        "client_lastname": st.column_config.TextColumn("Nom du client"),
     },
 )

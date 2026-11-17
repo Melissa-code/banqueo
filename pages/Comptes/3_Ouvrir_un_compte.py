@@ -1,9 +1,7 @@
 import streamlit as st
 
-from services import account_service
+from services import account_service, client_service
 from decimal import Decimal
-
-client_id : str = st.session_state.get("client_id")
 
 
 st.title(":material/add_card: Ouvrir un compte client")
@@ -12,8 +10,29 @@ st.write("") # saut de ligne
 with st.form("add_account_form", border=True):
     st.markdown("##### Informations du compte")
 
-    # infos client fix 
-    st.badge(label=f"Numéro client: {client_id}", icon=None, color="blue", width="content", help=None)
+    # choix du client 
+    clients = client_service.get_clients()
+    if clients is None:
+        st.error("Impossible de charger la liste des clients (API indisponible)")
+        st.stop()
+    if not clients:
+        st.info("Aucun client enregistré. Créez d'abord un client.")
+        st.stop()
+
+    client_ids = [c["id"] for c in clients]
+    preselected = st.session_state.get("client_id")
+    client_index = client_ids.index(int(preselected)) if preselected and int(preselected) in client_ids else None
+    client_id = st.selectbox(
+        label="Client",
+        options=client_ids,
+        index=client_index,
+        format_func=lambda cid: next(
+            f"{c['firstname']} {c['lastname']} - N° client: {cid})" for c in clients if c["id"] == cid
+        ),
+        key="client_select",
+        placeholder="Choisissez un client",
+        width="stretch",
+    )
 
     types = account_service.get_account_types()
     if not types:
@@ -60,6 +79,7 @@ with st.form("add_account_form", border=True):
     submitted = st.form_submit_button("Ouvrir le compte", type="primary",  width="content", )
 
     if submitted:
+        account_number = account_number.strip().upper()
         error = account_service.validate_account(client_id, account_name, account_number)
         if error:
             st.error(error)
@@ -72,7 +92,7 @@ with st.form("add_account_form", border=True):
             )
             if ok:
                 st.success(message)
-                st.session_state["client_id"] = int(client_id)
+                st.session_state["client_id"] = client_id
                 # st.page_link("pages/Comptes/2_Voir_le_compte.py", label="Voir le compte du client →")
             else:
                 st.error(message)

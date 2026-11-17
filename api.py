@@ -121,13 +121,21 @@ def list_account_types():
 
 
 @app.get("/accounts",
-    summary="Lister tous les comptes",
+    summary="Lister tous les comptes de tous les clients",
     description="Renvoie la liste de tous les comptes."
 )
 def list_accounts():
     return [
-        {"account_number": account.account_number, "balance": str(account.balance)}
-        for account in bank.get_all_accounts()
+        {
+            "account_number": account.account_number,
+            "account_name": account.account_name,
+            "balance": str(account.balance),
+            "client_id": client.id,
+            "client_firstname": client.firstname,
+            "client_lastname": client.lastname,
+        }
+        for client in bank.get_all_clients()
+        for account in client.get_all_accounts()
     ]
 
 
